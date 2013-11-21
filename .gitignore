@@ -47,7 +47,7 @@ coverage.xml
 docs/_build/
 
 # settings
-settings_local.py
+settings_secret.py
 
 # vim
 *.swp
