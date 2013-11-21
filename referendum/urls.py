@@ -17,4 +17,5 @@ urlpatterns = patterns('',
     # url(r'^admin/', include(admin.site.urls)),
     url(r'^example/$', views.example, name='example'),
     url(r'^(?P<facebook_id>\d+)/vote/$', views.vote, name='vote'),
+    url(r'^results/$', views.results, name='results'),
 )

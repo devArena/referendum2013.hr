@@ -10,3 +10,14 @@ class Vote(models.Model):
 
     def __unicode__(self):
         return '{}: {}'.format(self.facebook_id, self.vote)
+
+    class Meta:
+        ordering = ['-date']
+
+class ActiveVote(models.Model):
+    facebook_id = models.BigIntegerField()
+    vote = models.IntegerField()
+
+    def __unicode__(self):
+        return '{}: {}'.format(self.facebook_id, self.vote)
+
