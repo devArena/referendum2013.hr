@@ -9,4 +9,4 @@ class Vote(models.Model):
     eligible = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return self.facebook_id + ': ' + self.vote
+        return '{}: {}'.format(self.facebook_id, self.vote)

@@ -113,9 +113,18 @@
             <td>
               <form action="{% url 'referendum:vote' user.profile_or_self.facebook_id %}" method="post">
     {% csrf_token %}
-    <input type="radio" name="choice" id="ZA" value=1 />
+
+    {% ifequal vote.vote 1 %}
+      <input type="radio" name="choice" id="ZA" value=1 checked />
+    {% else %}
+      <input type="radio" name="choice" id="ZA" value=1 />
+    {% endifequal %}
     <label for="ZA">ZA</label><br />
-    <input type="radio" name="choice" id="PROTIV" value=0 />
+    {% ifequal vote.vote 0 %}
+      <input type="radio" name="choice" id="PROTIV" value=0 checked />
+    {% else %}
+      <input type="radio" name="choice" id="PROTIV" value=0 />
+    {% endifequal %}
     <label for="PROTIV">PROTIV</label><br />
     <input type="submit" value="Vote" />
     </form>
