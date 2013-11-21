@@ -1,5 +1,6 @@
 {% load url from future %}
 
+
 <html>
   <head>
     <title>Bootstrap 101 Template</title>
@@ -10,12 +11,23 @@
     <!-- Optional theme -->
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap-theme.min.css">
 
+    <meta property="og:title" content="Referendum 2013" />
+    <meta property="og:description" content="Glasao sam na Referendum 1.12." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="http://referendum.brahle.com/referendum/example" />    
+    <meta property="og:image" content="http://a2.mzstatic.com/us/r30/Purple/v4/af/76/1b/af761bab-5ae2-e148-b7d7-605cab085fde/icon_256.png" />
+    <meta property="og:site_name" content="Referendum 2013"/>
+    <meta property="fb:app_id" content="1407261166178158" />
+    <meta id="mediaSlideKeywords" name="keywords" content="referendum, 2013, brak"></meta>
+
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
+
 
     <style>
       /* Move down content because we have a fixed navbar that is 50px tall */
@@ -29,6 +41,15 @@
     
   </head>
   <body>
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=1407261166178158";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+    </script>
 
     {% if request.GET.fb_error_or_cancel or request.GET.error %}
         <div class="error">
@@ -88,6 +109,8 @@
         <p><a class="btn btn-primary btn-lg" role="button" onclick="F.connect(this.parentNode.parentNode); return false;">Prijavi se s Facebookom &raquo;</a></p>
         </form>
 
+        <div class="fb-like" data-href="http://referendum.brahle.com/referendum/example" data-width="200" data-layout="standard" data-action="like" data-show-faces="true" data-share="true"></div>
+
       </div>
     </div>
 
@@ -128,6 +151,8 @@
     <label for="PROTIV">PROTIV</label><br />
     <input type="submit" value="Vote" />
     </form>
+
+    <div class="fb-like" data-href="http://referendum.brahle.com/referendum/example" data-width="200" data-layout="standard" data-action="like" data-show-faces="true" data-share="true"></div>
             </td>
 
         <tr>
