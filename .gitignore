@@ -48,6 +48,7 @@ docs/_build/
 
 # settings
 settings_secret.py
+secret_key.py
 
 # vim
 *.swp
