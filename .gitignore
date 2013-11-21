@@ -52,3 +52,7 @@ secret_key.py
 
 # vim
 *.swp
+
+# profilne slike ne zelimo u reposu
+images/facebook_profiles/
+
