@@ -14,7 +14,12 @@ def example(request):
     context = RequestContext(request)
     if request.user.is_authenticated():
         #TODO: makni filter
-        vote = Vote.objects.filter(facebook_id=request.user.facebook_id).order_by('-date')[0]
+
+        votes = Vote.objects.filter(facebook_id=request.user.facebook_id).order_by('-date')
+        if len(votes) >= 1:
+            vote = votes[0]
+        else:
+            vote = None
     else:
         vote = None
     context['vote'] = vote
@@ -24,6 +29,8 @@ def results(request):
     print ActiveVote.objects.values('vote').annotate(Count('vote'))
     return HttpResponseRedirect(reverse('referendum:example'))
 
+def friend_results(request):
+    pass
 
 def vote(request, facebook_id):
     #TODO: saniteze post
