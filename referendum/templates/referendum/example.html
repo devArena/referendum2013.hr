@@ -78,8 +78,14 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">ReferendumHR2013</a>
+          <a class="navbar-brand" href="#">Referendum 2013</a>
+
         </div>
+        {% if user.is_authenticated %}
+        <div class="navbar-collapse collapse">
+            <a class="btn btn-default navbar-btn navbar-right" href="{% url 'auth_logout' %}?next={{ request.path|urlencode }}">Odlogiraj se</a>
+          </div>
+        {% endif %} 
 <!--         <div class="navbar-collapse collapse">
           <form class="navbar-form navbar-right">
             <div class="form-group">
@@ -97,19 +103,29 @@
     {% if not user.is_authenticated %}
 
     <!-- Main jumbotron for a primary marketing message or call to action -->
-    <div class="jumbotron">
-      <div class="container">
-        <h1>Za ili Protiv?</h1>
-        <p>Prijavite se s Facebookom, ispunite anketu i saznajte što vaši prijatelji i ostali misle o ovoj temi.</p>
+    <div class="jumbotron">      
 
-        <!--form to call registration via facebook -->
-        <form action="{% url 'facebook_connect' %}" method="post">
-        {% csrf_token %}
-        <input type="hidden" value="{{ request.path }}" name="next" />
-        <p><a class="btn btn-primary btn-lg" role="button" onclick="F.connect(this.parentNode.parentNode); return false;">Prijavi se s Facebookom &raquo;</a></p>
-        </form>
+      <div class="container">      
+              
+              <div class="media">
+  <a class="pull-left" href="#">
+    <img class="media-object" src="http://images3.wikia.nocookie.net/__cb20120330024139/logopedia/images/d/d7/Google_Chrome_logo_2011.svg">
+  </a>
+  <div class="media-body">
+    <h1>Referendum 2013</h1>
+              <p >Prijavite se s Facebookom, glasajte i saznajte što vaši prijatelji i ostali misle o ovoj temi.</p>
+              <!--form to call registration via facebook -->
+              <form action="{% url 'facebook_connect' %}" method="post">
+              {% csrf_token %}
+              <input type="hidden" value="{{ request.path }}" name="next" />
+              <p><a class="btn btn-primary btn-lg" role="button" onclick="F.connect(this.parentNode.parentNode); return false;">Prijavi se s Facebookom &raquo;</a></p>
+              </form>
+              <div class="fb-like" data-href="http://referendum.brahle.com/referendum/example" data-width="200" data-layout="standard" data-action="like" data-show-faces="true" data-share="true">
+              </div>
+  </div>
+</div>
+        </div>      
 
-        <div class="fb-like" data-href="http://referendum.brahle.com/referendum/example" data-width="200" data-layout="standard" data-action="like" data-show-faces="true" data-share="true"></div>
 
       </div>
     </div>
@@ -121,11 +137,17 @@
     <div class="jumbotron">
       <div class="container">
       <h1>Dobrodošao {{ user.first_name }} {{ user.last_name }}</h1>
-      <a href="{% url 'auth_logout' %}?next={{ request.path|urlencode }}">Odlogiraj se</a><br />
+
+      <!-- <a href="{% url 'auth_logout' %}?next={{ request.path|urlencode }}">Odlogiraj se</a><br /> -->
 
     <p>
-    Hvala što ste se logirali s Facebookom. Molim Vas ispunite sljedeću anketu:
+    Hvala što ste se logirali s Facebookom. Molimo Vas da ispunite sljedeću anketu:
+    </p></br>
+    <p>
+    Jeste li za to da se u Ustav Republike Hrvatske unese odredba po kojoj je brak životna zajednica žene i muškarca?
     </p>
+
+
 
     <table id="rounded-corner">
         <thead>
@@ -135,6 +157,7 @@
             </td>
             <td>
               <form action="{% url 'referendum:vote' user.profile_or_self.facebook_id %}" method="post">
+
     {% csrf_token %}
 
     {% ifequal vote.vote 1 %}
@@ -153,9 +176,13 @@
     </form>
 
     <div class="fb-like" data-href="http://referendum.brahle.com/referendum/example" data-width="200" data-layout="standard" data-action="like" data-show-faces="true" data-share="true"></div>
-            </td>
 
-        <tr>
+            </td>
+       
+            
+         
+
+       <!--  <tr>
             <td>Što su tvoji prijatelji odgovorili:</td>
             <td>
                 <ul>
@@ -164,8 +191,40 @@
                 {% endfor %}
                 </ul>
             </td>
-        </tr>
+        </tr> -->
     </table>
+
+
+<div class="progress">
+  <div class="progress-bar progress-bar-success" style="width: 35%">
+    <span class="sr-only">35% Complete (success)</span>
+  </div>
+  <div class="progress-bar progress-bar-warning" style="width: 65%">
+    <span class="sr-only">65% Complete (warning)</span>
+  </div>
+  
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-body">
+    <h5><small> 
+<p class="muted">U svrhu ovog istraživanja prikupljamo podatke o vašem stavu o
+                referendumskom pitanju, kao i o vašem facebook profilu, čime želimo
+                dobiti uvid u načine kako međusobna poznanstva utječu na stavove
+                korisnika facebooka.
+
+                Vaš individualni odgovor na referendumsko pitanje neće biti vidljiv
+                drugim korisnicima, nego će samo biti vidljiv anonimni prosjek
+                odgovora. Istraživači garantiraju da prikupljeni podaci neće biti
+                korišteni ni u koje druge svrhe osim znanstveno-istraživačke.
+
+                Slanjem svojeg odgovora preko ovog upitnika potvrđujete da ste
+                suglasni s ovim pravilima korištenja.</p></small></h5>
+  </div>
+</div>
+
+
+   
 
     </div>
   </div>
