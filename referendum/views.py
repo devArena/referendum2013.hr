@@ -6,6 +6,7 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.core.urlresolvers import reverse
 from django.db.models import Count
+from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect
 import datetime
 from referendum.models import Vote, ActiveVote
@@ -29,8 +30,13 @@ def results(request):
     print ActiveVote.objects.values('vote').annotate(Count('vote'))
     return HttpResponseRedirect(reverse('referendum:example'))
 
-def friend_results(request):
-    pass
+def friends_results(request):
+    cursor = connection.cursor()
+    cursor.execute(
+        'SELECT vote, COUNT(vote) FROM django_facebook_facebookuser AS fb JOIN referendum_activevote AS v ON fb.facebook_id = v.facebook_id WHERE fb.user_id={} GROUP BY vote'
+            .format(request.user.id)
+    )
+    return HttpResponse('{}'.format(cursor.fetchall()))
 
 def vote(request, facebook_id):
     #TODO: saniteze post
