@@ -156,26 +156,45 @@
               <img src="http://graph.facebook.com/{{ user.profile_or_self.facebook_id }}/picture?type=large" title="facebook stored image" /><br />
             </td>
             <td>
-              <form action="{% url 'referendum:vote' user.profile_or_self.facebook_id %}" method="post">
 
-    {% csrf_token %}
+              <button id="btn_yes" class="btn btn-large btn btn-success" type="button">Za</button>
+              <button id="btn_no" class="btn btn-large btn btn-danger" type="button">Protiv</button>
 
-    {% ifequal vote.vote 1 %}
-      <input type="radio" name="choice" id="ZA" value=1 checked />
-    {% else %}
-      <input type="radio" name="choice" id="ZA" value=1 />
-    {% endifequal %}
-    <label for="ZA">ZA</label><br />
-    {% ifequal vote.vote 0 %}
-      <input type="radio" name="choice" id="PROTIV" value=0 checked />
-    {% else %}
-      <input type="radio" name="choice" id="PROTIV" value=0 />
-    {% endifequal %}
-    <label for="PROTIV">PROTIV</label><br />
-    <input type="submit" value="Vote" />
-    </form>
+              <form id="form_vote" action="{% url 'referendum:vote' user.profile_or_self.facebook_id %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" id="input_vote" name="choice" value="-1">
+              </form>
+             
 
-    <div class="fb-like" data-href="http://referendum.brahle.com/referendum/example" data-width="200" data-layout="standard" data-action="like" data-show-faces="true" data-share="true"></div>
+              {% if vote.vote == 1 %}
+               <p>Glasali ste ZA!</p>
+              {% elif vote.vote == 0 %}
+                <p>Glasali ste PROTIV!</p>
+              {% else %}
+                <p>Glasajte!</p>
+              {% endif %}
+
+
+              <!-- <form action="{% url 'referendum:vote' user.profile_or_self.facebook_id %}" method="post">
+
+              {% csrf_token %}
+
+              {% ifequal vote.vote 1 %}
+                <input type="radio" name="choice" id="ZA" value=1 checked />
+              {% else %}
+                <input type="radio" name="choice" id="ZA" value=1 />
+              {% endifequal %}
+              <label for="ZA">ZA</label><br />
+              {% ifequal vote.vote 0 %}
+                <input type="radio" name="choice" id="PROTIV" value=0 checked />
+              {% else %}
+                <input type="radio" name="choice" id="PROTIV" value=0 />
+              {% endifequal %}
+              <label for="PROTIV">PROTIV</label><br />
+              <input type="submit" value="Vote" />
+              </form> -->
+
+              <div class="fb-like" data-href="http://referendum.brahle.com/referendum/example" data-width="200" data-layout="standard" data-action="like" data-show-faces="true" data-share="true"></div>
 
             </td>
        
@@ -257,6 +276,18 @@
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery.js"></script>
+    <script>
+      $("#btn_yes").click(function(e){
+        $("#input_vote").val(1);
+        $("#form_vote").submit();
+      });
+
+      $("#btn_no").click(function(e){
+        $("#input_vote").val(0);
+        $("#form_vote").submit();
+      });
+    </script>
+});
     <!-- Latest compiled and minified JavaScript -->
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
 
