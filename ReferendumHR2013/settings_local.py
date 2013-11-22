@@ -15,6 +15,13 @@ DATABASES = {
 
 FACEBOOK_APP_SECRET = '-- DEFINE IN settings_secret.py --'
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}
+
 # Taken from http://stackoverflow.com/questions/4664724/distributing-django-projects-with-unique-secret-keys
 try:
     from secret_key import *
