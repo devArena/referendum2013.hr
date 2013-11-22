@@ -13,7 +13,6 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedire
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
-from project.settings import CACHE_TIMEOUT
 from referendum.models import Vote, ActiveVote
 from referendum import tasks
 
