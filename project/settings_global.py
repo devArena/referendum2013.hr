@@ -171,3 +171,9 @@ AUTH_USER_MODEL = 'django_facebook.FacebookCustomUser'
 
 FACEBOOK_STORE_FRIENDS = True
 
+# use celery for storing friends and likes
+FACEBOOK_CELERY_STORE = True
+
+# use celery for extending tokens
+FACEBOOK_CELERY_TOKEN_EXTEND = True
+
