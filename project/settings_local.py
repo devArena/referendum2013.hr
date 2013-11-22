@@ -1,4 +1,4 @@
-# Django settings for ReferendumHR2013 project.
+# Django settings for project project.
 
 import os
 
