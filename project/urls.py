@@ -16,5 +16,5 @@ urlpatterns = patterns('',
     # url(r'^admin/', include(admin.site.urls)),
     (r'^facebook/', include('django_facebook.urls')),
     (r'^accounts/', include('django_facebook.auth_urls')),
-    (r'^referendum/', include('referendum.urls', namespace="referendum")),
+    (r'^', include('referendum.urls', namespace="referendum")),
 )

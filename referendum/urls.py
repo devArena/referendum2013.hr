@@ -15,7 +15,7 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
-    url(r'^example/$', views.example, name='example'),
+    url(r'^$', views.example, name='example'),
     url(r'^(?P<facebook_id>\d+)/vote/$', views.vote, name='vote'),
     url(r'^results/$', views.results, name='results'),
     url(r'^friends_results/$', views.friends_results, name='results'),
