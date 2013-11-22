@@ -1,5 +1,10 @@
 # Django settings for ReferendumHR2013 project.
 
+import os
+
+PROJECT_ROOT = os.getcwd()
+SITE_NAME = os.path.basename(PROJECT_ROOT)
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -48,7 +53,7 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
