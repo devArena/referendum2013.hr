@@ -160,7 +160,7 @@
               <button id="btn_yes" class="btn btn-large btn btn-success" type="button">Za</button>
               <button id="btn_no" class="btn btn-large btn btn-danger" type="button">Protiv</button>
 
-              <form id="form_vote" action="{% url 'referendum:vote' user.profile_or_self.facebook_id %}" method="post">
+              <form id="form_vote" action="{% url 'referendum:vote' %}" method="post">
                 {% csrf_token %}
                 <input type="hidden" id="input_vote" name="choice" value="-1">
               </form>
@@ -174,25 +174,6 @@
                 <p>Glasajte!</p>
               {% endif %}
 
-
-              <!-- <form action="{% url 'referendum:vote' user.profile_or_self.facebook_id %}" method="post">
-
-              {% csrf_token %}
-
-              {% ifequal vote.vote 1 %}
-                <input type="radio" name="choice" id="ZA" value=1 checked />
-              {% else %}
-                <input type="radio" name="choice" id="ZA" value=1 />
-              {% endifequal %}
-              <label for="ZA">ZA</label><br />
-              {% ifequal vote.vote 0 %}
-                <input type="radio" name="choice" id="PROTIV" value=0 checked />
-              {% else %}
-                <input type="radio" name="choice" id="PROTIV" value=0 />
-              {% endifequal %}
-              <label for="PROTIV">PROTIV</label><br />
-              <input type="submit" value="Vote" />
-              </form> -->
 
               <div class="fb-like" data-href="http://referendum.brahle.com/referendum/example" data-width="200" data-layout="standard" data-action="like" data-show-faces="true" data-share="true"></div>
 

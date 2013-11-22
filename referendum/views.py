@@ -2,18 +2,20 @@ import datetime
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db import connection
 from django.db.models import Count
 from django.http import Http404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
 from project.settings import CACHE_TIMEOUT
 from referendum.models import Vote, ActiveVote
+from referendum import tasks
 
 import random
 from django_facebook.models import FacebookUser
@@ -68,21 +70,13 @@ def friends_results(request):
         cache.set(key, result)
     return HttpResponse(result)
 
-def vote(request, facebook_id):
-    #TODO: saniteze post
-    now = datetime.datetime.now()
-    #TODO: provjeri je li korisnik prijavljen...
-    v = Vote(vote=request.POST['choice'],facebook_id=request.user.facebook_id)
-    v.save()
+@login_required
+def vote(request):
     try:
-        active_vote = ActiveVote.objects.get(facebook_id=request.user.facebook_id)
-        active_vote.vote = request.POST['choice']
-    except ObjectDoesNotExist:
-        active_vote = ActiveVote(
-            vote=request.POST['choice'],
-            facebook_id=request.user.facebook_id
-        )
-    active_vote.save()
+        vote = int(request.POST['choice'])
+    except (KeyError, ValueError) as e:
+        return HttpResponseBadRequest('ERROR 400: Zlocko! Note to self: Napisi ovo do kraja.')
+    tasks.save_vote.delay(request.user.facebook_id, vote)
     return HttpResponseRedirect(reverse('referendum:example'))
 
 def stressTest(request):
