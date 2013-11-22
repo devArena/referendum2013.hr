@@ -91,9 +91,19 @@ def stressTest(request):
 	email='email'
 	password='password'
 	last_login=datetime.datetime.now()
-
-	us=User													                       	 	 (id = 1, username=username,first_name=first_name,last_name=last_name,email=email,password=password,
-	is_staff=0,is_active=1,is_superuser=0,last_login=last_login,date_joined=last_login)	
+	us=User(
+        id=1,
+        username=username,
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        password=password,
+        is_staff=0,
+        is_active=1,
+        is_superuser=0,
+        last_login=last_login,
+        date_joined=last_login
+    )
 	friends=[]
 
 	for i in range(1, num_friends+1):
@@ -108,8 +118,8 @@ def stressTest(request):
 		#friend=FacebookUser(user_id=user_id,facebook_id=facebook_id, name=name,gender=gend)
 		#friend.save()
 		friends.append(friend_dict)
-	
-	
+
+
 	choice=random.randint(0,1)
 	date=datetime.datetime.now()
 	v=Vote(vote=choice,date=date,facebook_id=facebook_id)
@@ -120,4 +130,4 @@ def stressTest(request):
 	store_friends(us,friends)
 	return HttpResponseRedirect(reverse('referendum:example'))
 	#return render_to_response('referendum/example.html')
-    
+
