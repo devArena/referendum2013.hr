@@ -3,7 +3,7 @@ import datetime
 from django.conf import settings
 from django.contrib import messages
 from django.core.cache import cache
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db import connection
 from django.db.models import Count
@@ -32,6 +32,8 @@ def example(request):
 def results(request):
     #TODO: vrati JSON
     #TODO: napravi ovo bolje
+    if not request.user.is_authenticated():
+        raise PermissionDenied
     key = 'global_results'
     result = cache.get(key)
     if result is None:
@@ -42,6 +44,8 @@ def results(request):
 def friends_results(request):
     #TODO: vrati JSON
     #TODO: napravi ovo bolje
+    if not request.user.is_authenticated():
+        raise PermissionDenied
     key = 'friends_{}'.format(request.user.id)
     result = cache.get(key)
     if result is None:
