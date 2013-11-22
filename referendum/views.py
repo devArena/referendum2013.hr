@@ -15,6 +15,11 @@ from django.template.context import RequestContext
 from project.settings import CACHE_TIMEOUT
 from referendum.models import Vote, ActiveVote
 
+import random
+from django_facebook.models import FacebookUser
+from django.contrib.auth.models import User
+from django_facebook.tasks import store_friends
+
 def example(request):
     context = RequestContext(request)
     if request.user.is_authenticated():
