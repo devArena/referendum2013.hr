@@ -15,12 +15,15 @@ DATABASES = {
 
 FACEBOOK_APP_SECRET = '-- DEFINE IN settings_secret.py --'
 
+CACHE_TIMEOUT = 5*60
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
         'LOCATION': '127.0.0.1:11211',
+        'TIMEOUT': CACHE_TIMOUT,
     }
 }
+
 
 # Taken from http://stackoverflow.com/questions/4664724/distributing-django-projects-with-unique-secret-keys
 try:

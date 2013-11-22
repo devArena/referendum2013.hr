@@ -1,21 +1,24 @@
+import datetime
+
 from django.conf import settings
 from django.contrib import messages
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
+from django.db import connection
+from django.db.models import Count
 from django.http import Http404
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-from django.core.urlresolvers import reverse
-from django.db.models import Count
-from django.db import connection
-from django.http import HttpResponse, HttpResponseRedirect
-import datetime
+
+from project.settings import CACHE_TIMEOUT
 from referendum.models import Vote, ActiveVote
 
 def example(request):
     context = RequestContext(request)
     if request.user.is_authenticated():
         #TODO: makni filter
-
         votes = Vote.objects.filter(facebook_id=request.user.facebook_id).order_by('-date')
         if len(votes) >= 1:
             vote = votes[0]
@@ -28,21 +31,33 @@ def example(request):
 
 def results(request):
     #TODO: vrati JSON
-    return HttpResponse('{}'.format(ActiveVote.objects.values('vote').annotate(Count('vote'))))
+    #TODO: napravi ovo bolje
+    key = 'global_results'
+    result = cache.get(key)
+    if result is None:
+        result = '{}'.format(ActiveVote.objects.values('vote').annotate(Count('vote')))
+        cache.set(key, result)
+    return HttpResponse(result)
 
 def friends_results(request):
-    cursor = connection.cursor()
-    cursor.execute(
-        ('SELECT vote, COUNT(vote) ' +
-            'FROM django_facebook_facebookuser AS fb ' +
-            'JOIN referendum_activevote AS v ' +
-                'ON fb.facebook_id = v.facebook_id ' +
-            'WHERE fb.user_id={} ' +
-            'GROUP BY vote')
-        .format(request.user.id)
-    )
     #TODO: vrati JSON
-    return HttpResponse('{}'.format(cursor.fetchall()))
+    #TODO: napravi ovo bolje
+    key = 'friends_{}'.format(request.user.id)
+    result = cache.get(key)
+    if result is None:
+        cursor = connection.cursor()
+        cursor.execute(
+            ('SELECT vote, COUNT(vote) ' +
+                'FROM django_facebook_facebookuser AS fb ' +
+                'JOIN referendum_activevote AS v ' +
+                    'ON fb.facebook_id = v.facebook_id ' +
+                'WHERE fb.user_id={} ' +
+                'GROUP BY vote')
+            .format(request.user.id)
+        )
+        result = '{}'.format(cursor.fetchall())
+        cache.set(key, result)
+    return HttpResponse(result)
 
 def vote(request, facebook_id):
     #TODO: saniteze post
