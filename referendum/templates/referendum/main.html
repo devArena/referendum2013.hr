@@ -369,11 +369,11 @@ $(this).css({'min-height': max});
 
 			if(results.length >= 1)
 			{
-				mod_results[results[0].vote].value = results[0].vote_count;	
+				mod_results[results[0].vote].value = Number(results[0].vote_count);	
 			}
 			if(results.length == 2)
 			{				
-				mod_results[results[1].vote].value = results[1].vote_count;	
+				mod_results[results[1].vote].value = Number(results[1].vote_count);	
 			}		
 
 			draw_piechart(mod_results, chart);
