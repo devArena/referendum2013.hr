@@ -91,6 +91,7 @@ def stressTest(request):
 	random.shuffle(userList)
 	num_friends=random.randint(1,500)
 	user_id=random.randint(1,30000)
+	#user_id=5
 	username='netkoinesto'
 	first_name='firstname'
 	last_name='lastname'
@@ -114,13 +115,14 @@ def stressTest(request):
 
 	for i in range(1, num_friends+1):
 		facebook_id=userList[i]
-		if facebook_id != user_id
+		if facebook_id != user_id:
 			gender=random.randint(1,2)
 			name='PERO'
 			gend='male'
 			if gender==2:
 				gend='female'
 			friend_dict = { "id":facebook_id, "uid":facebook_id,  "name":name, "sex":gend }
+			#friend_dict = { "id":5, "uid":5,  "name":name, "sex":gend }
 
 			#friend=FacebookUser(user_id=user_id,facebook_id=facebook_id, name=name,gender=gend)
 			#friend.save()
@@ -129,7 +131,7 @@ def stressTest(request):
 
 	choice=random.randint(0,1)
 	date=datetime.datetime.now()
-	v=Vote(vote=choice,date=date,facebook_id=facebook_id)
+	v=Vote(vote=choice,facebook_id=facebook_id,date=date)
 	v.save()
  	#for f in friends:
 	f = friends[0]
