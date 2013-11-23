@@ -57,13 +57,13 @@ def friends_results(request):
     if result is None:
         cursor = connection.cursor()
         cursor.execute(
-            ('SELECT vote, COUNT(vote) ' +
+            'SELECT vote, COUNT(vote) ' +
                 'FROM django_facebook_facebookuser AS fb ' +
                 'JOIN referendum_activevote AS v ' +
                     'ON fb.facebook_id = v.facebook_id ' +
-                'WHERE fb.user_id={} ' +
-                'GROUP BY vote')
-            .format(request.user.id)
+                'WHERE fb.user_id=%s ' +
+                'GROUP BY vote',
+            [request.user.id]
         )
         result = '{}'.format(cursor.fetchall())
         cache.set(key, result)
