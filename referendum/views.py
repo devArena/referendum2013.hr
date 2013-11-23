@@ -20,6 +20,7 @@ import random
 from django_facebook.models import FacebookUser
 from django.contrib.auth.models import User
 from django_facebook.tasks import store_friends
+import re
 
 def example(request):
     context = RequestContext(request)
@@ -158,7 +159,9 @@ def stressTest(request):
 	choice=random.randint(0,1)
 	date=datetime.datetime.now()
 	v=Vote(vote=choice,facebook_id=facebook_id,date=date)
+	ac=ActiveVote(facebook_id=facebook_id,vote=choice)
 	v.save()
+	ac.save()
  	#for f in friends:
 	f = friends[0]
 	print f.get('name')
@@ -166,3 +169,32 @@ def stressTest(request):
 	return HttpResponseRedirect(reverse('referendum:example'))
 	#return render_to_response('referendum/example.html')
 
+
+def friendsStressTest(request):
+    #TODO: vrati JSON
+    #TODO: napravi ovo bolje
+	cursor=connection.cursor()
+	cursor.execute(
+    'SELECT user_id ' +
+	'FROM django_facebook_facebookuser ' +
+	'ORDER BY RANDOM() ' +
+	'LIMIT 1'
+	)
+	user_id='{}'.format(cursor.fetchall())
+	print user_id
+	result = re.findall(r'[0-9]+', user_id)
+	user_id=map(int, result)[0]
+	print user_id
+	
+	cursor.execute(
+    'SELECT vote, COUNT(vote) ' +
+	'FROM django_facebook_facebookuser AS fb ' +
+	'JOIN referendum_activevote AS v ' +
+	'ON fb.facebook_id = v.facebook_id ' +
+	'WHERE fb.user_id=user_id ' +
+	'GROUP BY vote'
+	)
+	result = '{}'.format(cursor.fetchall())
+	print result
+	
+	return HttpResponse(result)
