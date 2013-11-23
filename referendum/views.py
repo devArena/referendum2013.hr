@@ -79,6 +79,7 @@ def vote(request):
     return HttpResponseRedirect(reverse('referendum:example'))
 
 def stressTest(request):
+	#Only for testing Remove in deploy version
 	userList=range(1,30001)
 	random.shuffle(userList)
 	num_friends=random.randint(1,500)
