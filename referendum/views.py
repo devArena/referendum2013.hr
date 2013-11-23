@@ -30,15 +30,41 @@ def example(request):
             vote = votes[0]
         else:
             vote = None
+
+        cursor = connection.cursor()
+        cursor.execute(
+            ('SELECT vote, COUNT(vote)' +
+            'FROM django_facebook_facebookuser AS fb ' +
+            'JOIN referendum_activevote AS v ' +
+            'ON fb.facebook_id = v.facebook_id ' +
+            'WHERE fb.user_id={} ' +
+            'GROUP BY vote')
+               .format(request.user.id)
+        )
+        #friends_results = dict(cursor.fetchall())
+        friends_rows = cursor.fetchall()
+        
+        friends_results= []
+
+        for row in friends_rows:
+            row_as_dict = {
+                'vote' : row[0],
+                'vote_count' : row[1]}
+            friends_results.append(row_as_dict)   
+
     else:
         vote = None
-    context['vote'] = vote
+        friends_results = -1
 
-    result = '{}'.format(ActiveVote.objects.values('vote').annotate(Count('vote')))
-    
+    key = 'global_results'
+    global_results = cache.get(key)
+    if global_results is None:
+        global_results = '{}'.format(ActiveVote.objects.values('vote').annotate(vote_count=Count('vote')))
+        cache.set(key, global_results)
+  
     context['vote'] = vote
-    context['global_results'] = result
-
+    context['global_results'] = global_results
+    context['friends_results'] = friends_results
     return render_to_response('referendum/main.html', context)
 
 def results(request):
