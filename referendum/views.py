@@ -23,6 +23,9 @@ from django_facebook.tasks import store_friends
 import re
 
 def example(request):
+    #TODO: Jako glupo ali neka zasad bude ovako.
+    #TODO: Koristiti funkcije results i friends_results s xhr
+    #TODO: Staviti cache za friends_results
     context = RequestContext(request)
     if request.user.is_authenticated():
         #TODO: makni filter
@@ -50,7 +53,7 @@ def example(request):
         for row in friends_rows:
             row_as_dict = {
                 'vote' : row[0],
-                'vote_count' : row[1]}
+                'vote_count' : str(row[1])}
             friends_results.append(row_as_dict)   
 
     else:
