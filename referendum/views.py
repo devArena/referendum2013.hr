@@ -167,7 +167,7 @@ def stressTest(request):
 	ac.save()
  	#for f in friends:
 	f = friends[0]
-	print f.get('name')
+	#print f.get('name')
 	store_friends(us,friends)
 	return HttpResponseRedirect(reverse('referendum:example'))
 	#return render_to_response('referendum/example.html')
@@ -184,10 +184,10 @@ def friendsStressTest(request):
 	'LIMIT 1'
 	)
 	user_id='{}'.format(cursor.fetchall())
-	print user_id
+	#print user_id
 	result = re.findall(r'[0-9]+', user_id)
 	user_id=map(int, result)[0]
-	print user_id
+	#print user_id
 	
 	cursor.execute(
     'SELECT vote, COUNT(vote) ' +
@@ -198,6 +198,6 @@ def friendsStressTest(request):
 	'GROUP BY vote'
 	)
 	result = '{}'.format(cursor.fetchall())
-	print result
+	#print result
 	
 	return HttpResponse(result)
