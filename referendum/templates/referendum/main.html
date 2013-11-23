@@ -278,70 +278,148 @@ $(this).css({'min-height': max});
 	<script>
 	function draw_piechart(data, svg)
 	{
-	var width = 300,
-	    height = 300,
-	    radius = Math.min(width, height) / 2;
+var width = 300,
+    height = 300,
+    radius = Math.min(width, height) / 2;
 
-	//var data = [{"label": "protiv", "value": 22},
-	//            {"label": "za", "value": 11}
-	//            ];
+// var data = [{"label": "protiv", "value": 1},
+//             {"label": "za", "value": 1}
+//             ];
 
-	var pie = d3.layout.pie()
-	    .value(function(d) { return d.value; })
-	    .sort(null);
+var total_votes = data[0].value + data[1].value;
 
-	var arc = d3.svg.arc()
-	    .innerRadius(radius - 0.45*radius)
-	    .outerRadius(radius - 0.05*radius);
+var color_za = d3.rgb(55,148,48);
+var color_protiv = d3.rgb(241,27,27);
+var color_prazno = d3.rgb(200,200,200);
 
-	var svg = svg
-	    .attr("width", width)
-	    .attr("height", height)
-	  .append("g")
-	    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+var svg = d3.select("#chart")
+    .attr("width", width)
+    .attr("height", height)
+  .append("g")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-	var color_za = d3.rgb(55,148,48);
-	var color_protiv = d3.rgb(241,27,27);
+var arc_zero = d3.svg.arc()
+    .innerRadius(radius - 0.45*radius)
+    .outerRadius(radius - 0.05*radius)
+    .startAngle(0);
 
-	var path = svg.datum(data).selectAll("path")
-	      .data(pie)
-	    .enter().append("path")
-	      .attr("fill", 
-	        function(d, i) { 
-	          if (d.data.label == "za") { return color_za; } 
-	          else if (d.data.label == "protiv") { return color_protiv; }
-	        })
-	      .attr("d", arc)
-	      .each(function(d) { this._current = d; }); // store the initial angles
+var path_zero = svg.append("path")
+          .datum({endAngle: 2*Math.PI})
+          .attr("fill", color_prazno)
+          .attr("d", arc_zero)
+          .classed("prazan");
 
-	// A formatter for counts.
-	var formatCount = d3.format(",.0f");
+if (total_votes >= 3 )
+{
 
-	var total_votes = data[0].value + data[1].value;
-	var percentage_protiv = (data[0].value / total_votes)*100;
-	var percentage_za = (data[1].value / total_votes)*100;
+var percentage_protiv = (data[0].value / total_votes)*100;
+var percentage_za = (data[1].value / total_votes)*100;
 
-	svg.append("text")
-	    .attr("dy", ".75em")
-	    .attr("y", -0.15*radius )
-	    .attr("x", 0 )
-	    .attr("text-anchor", "middle")
-	    .attr("font-family","sans-serif")
-	    .attr("font-size","22px")
-	    .attr("fill",color_za)
-	    .text("ZA  " + formatCount(percentage_za) + "%");
+var ratio_protiv = data[0].value / total_votes;
+var ratio_za = data[1].value / total_votes;
 
-	svg.append("text")
-	    .attr("dy", ".75em")
-	    .attr("y", 0.05*radius )
-	    .attr("x", 0 )
-	    .attr("text-anchor", "middle")
-	    .attr("font-family","sans-serif")
-	    .attr("font-size","22px")
-	    .attr("fill",color_protiv)
-	    .text("PROTIV  " + formatCount(percentage_protiv) + "%");
+var arc = d3.svg.arc()
+    .innerRadius(radius - 0.45*radius)
+    .outerRadius(radius - 0.05*radius);
 
-	}
+var za_arc = svg.append("path")
+    .datum({startAngle: 2*Math.PI, endAngle: 2*Math.PI})
+    .attr("fill", color_za)
+    .attr("d", arc)
+    .transition()
+    .duration(2000)
+    .attrTween("d", function(d) {
+      var interpolate = d3.interpolate(d.endAngle, ratio_protiv*2*Math.PI);
+          return function(t) {
+            d.endAngle = interpolate(t);
+            return arc(d);
+            }
+      });
+
+var protiv_arc = svg.append("path")
+    .datum({startAngle: 0, endAngle: 0})
+    .attr("fill", color_protiv)
+    .attr("d", arc)
+    .transition()
+    .duration(1500)
+    .attrTween("d", function(d) {
+      var interpolate = d3.interpolate(d.endAngle, ratio_protiv*2*Math.PI);
+          return function(t) {
+            d.endAngle = interpolate(t);
+            return arc(d);
+            }
+      });
+
+svg.append("text")
+    .attr("dy", ".75em")
+    .attr("y", -0.15*radius )
+    .attr("x", 0 )
+    .attr("text-anchor", "middle")
+    .attr("font-family","sans-serif")
+    .attr("font-size","22px")
+    .attr("fill",color_za)
+    .text("0")
+    .transition()
+    .duration(2000)
+    .tween("text", 
+      function() {
+          var i = d3.interpolate(this.textContent, Math.floor(percentage_za));
+      return function(t) {
+              this.textContent = "ZA " + Math.round(i(t)) + "%";
+              };
+      });
+
+svg.append("text")
+    .attr("dy", ".75em")
+    .attr("y", 0.05*radius )
+    .attr("x", 0 )
+    .attr("text-anchor", "middle")
+    .attr("font-family","sans-serif")
+    .attr("font-size","22px")
+    .attr("fill",color_protiv)
+    .text("0")
+    .transition()
+    .duration(2000)
+    .tween("text", 
+      function() {
+          var i = d3.interpolate(this.textContent, Math.floor(percentage_protiv));
+      return function(t) {
+              this.textContent = "PROTIV " + Math.round(i(t)) + "%";
+              };
+      });
+
+}
+else
+{
+
+  svg.append("text")
+    .attr("y", -0.15*radius )
+    .attr("x", 0 )
+    .attr("text-anchor", "middle")
+    .attr("font-family","sans-serif")
+    .attr("font-size","22px")
+    .attr("fill",color_prazno)
+    .text("Nema dosta");
+
+  svg.append("text")
+    .attr("y", 0.05*radius )
+    .attr("x", 0 )
+    .attr("text-anchor", "middle")
+    .attr("font-family","sans-serif")
+    .attr("font-size","22px")
+    .attr("fill",color_prazno)
+    .text("podataka za");
+
+  svg.append("text")
+    .attr("y", 0.25*radius )
+    .attr("x", 0 )
+    .attr("text-anchor", "middle")
+    .attr("font-family","sans-serif")
+    .attr("font-size","22px")
+    .attr("fill",color_prazno)
+    .text("prijatelje:-(");
+}
+
 	</script>
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
