@@ -33,7 +33,13 @@ def example(request):
     else:
         vote = None
     context['vote'] = vote
-    return render_to_response('referendum/example.html', context)
+
+    result = '{}'.format(ActiveVote.objects.values('vote').annotate(Count('vote')))
+    
+    context['vote'] = vote
+    context['global_results'] = result
+
+    return render_to_response('referendum/main.html', context)
 
 def results(request):
     #TODO: vrati JSON
@@ -45,6 +51,7 @@ def results(request):
     if result is None:
         result = '{}'.format(ActiveVote.objects.values('vote').annotate(Count('vote')))
         cache.set(key, result)
+
     return HttpResponse(result)
 
 def friends_results(request):
