@@ -21,6 +21,7 @@ from django_facebook.models import FacebookUser
 from django.contrib.auth.models import User
 from django_facebook.tasks import store_friends
 import re
+import ast
 
 def example(request):
     #TODO: Jako glupo ali neka zasad bude ovako.
@@ -35,19 +36,25 @@ def example(request):
         else:
             vote = None
 
-        cursor = connection.cursor()
-        cursor.execute(
-            ('SELECT vote, COUNT(vote)' +
-            'FROM django_facebook_facebookuser AS fb ' +
-            'JOIN referendum_activevote AS v ' +
-            'ON fb.facebook_id = v.facebook_id ' +
-            'WHERE fb.user_id={} ' +
-            'GROUP BY vote')
-               .format(request.user.id)
-        )
-        #friends_results = dict(cursor.fetchall())
-        friends_rows = cursor.fetchall()
-        
+        key = 'friends_{}'.format(request.user.id)
+        result = cache.get(key)
+        if result is None:
+            cursor = connection.cursor()
+            cursor.execute(
+                'SELECT vote, COUNT(vote) ' +
+                'FROM django_facebook_facebookuser AS fb ' +
+                'JOIN referendum_activevote AS v ' +
+                'ON fb.facebook_id = v.facebook_id ' +
+                'WHERE fb.user_id=%s ' +
+                'GROUP BY vote', [request.user.id]
+                )
+            result = '{}'.format(cursor.fetchall())
+            cache.set(key, result)
+
+        #TODO: Ovo je lose!
+        #TODO: Nepotrebna konverzija: arr of tuples --> string --> row_as_dict
+        #TODO: Potrebno je postaviti row_as_dict u cache, a ne pretacunavati
+        friends_rows = list(ast.literal_eval(result))   
         friends_results= []
 
         for row in friends_rows:
@@ -58,6 +65,7 @@ def example(request):
 
     else:
         vote = None
+        #TODO: set null
         friends_results = -1
 
     key = 'global_results'
