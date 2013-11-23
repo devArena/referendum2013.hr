@@ -91,7 +91,7 @@ def stressTest(request):
 	password='password'
 	last_login=datetime.datetime.now()
 	us=User(
-        id=1,
+        id=user_id,
         username=username,
         first_name=first_name,
         last_name=last_name,
@@ -106,17 +106,18 @@ def stressTest(request):
 	friends=[]
 
 	for i in range(1, num_friends+1):
-	 	facebook_id=random.randint(10000,300000)
-		gender=random.randint(1,2)
-		name='PERO'
-		gend='male'
-		if gender==2:
-			gend='female'
-		friend_dict = { "id":facebook_id, "uid":facebook_id,  "name":name, "sex":gend }
+		facebook_id=userList[i]
+		if facebook_id != user_id
+			gender=random.randint(1,2)
+			name='PERO'
+			gend='male'
+			if gender==2:
+				gend='female'
+			friend_dict = { "id":facebook_id, "uid":facebook_id,  "name":name, "sex":gend }
 
-		#friend=FacebookUser(user_id=user_id,facebook_id=facebook_id, name=name,gender=gend)
-		#friend.save()
-		friends.append(friend_dict)
+			#friend=FacebookUser(user_id=user_id,facebook_id=facebook_id, name=name,gender=gend)
+			#friend.save()
+			friends.append(friend_dict)
 
 
 	choice=random.randint(0,1)
