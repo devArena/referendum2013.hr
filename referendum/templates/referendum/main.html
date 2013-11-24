@@ -478,23 +478,23 @@
 		}
 
 		function draw_aggreated_results(results, chart)
-		{
-			var mod_results = [
-				{'label': 'protiv', 'value': 0},
-				{'label': 'za', 'value': 0},
-			];
+        {
+                var mod_results = [
+                        {'label': 'protiv', 'value': 0},
+                        {'label': 'za', 'value': 0},
+                ];
 
-			if(results.length >= 1)
-			{
-				mod_results[results[0].vote].value = results[0].vote_count;	
-			}
-			if(results.length == 2)
-			{				
-				mod_results[results[1].vote].value = results[1].vote_count;	
-			}		
+                if(results.length >= 1)
+                {
+                        mod_results[results[0].vote].value = Number(results[0].vote_count);        
+                }
+                if(results.length == 2)
+                {                                
+                        mod_results[results[1].vote].value = Number(results[1].vote_count);        
+                }                
 
-			draw_piechart(mod_results, chart);
-		}
+                draw_piechart(mod_results, chart);
+        }
 
 		function change_btn_vote_style(vote_value)
 		{
