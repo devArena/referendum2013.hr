@@ -207,8 +207,9 @@
 		{% if not user.is_authenticated %}
 
 		<div class="col-md-12 text-center">
-			<h2>Trenutni rezultati (<span class="badge votes-all">0</span> glasova)</h2>
+			<h2>Trenutni rezultati</h2>
 			<svg id="chart_global_results"></svg>
+			<p>Ukupni broj glasova: <span class="badge votes-all">0</span></p>
 		</div>
 
 		{% endif %}
@@ -216,13 +217,15 @@
 		{% if user.is_authenticated %}
 
 		<div class="col-md-6 text-center">
-			<h2>Trenutni rezultati (<span class="badge votes-all">0</span> glasova)</h2>
+			<h2>Trenutni rezultati</h2>
 			<svg id="chart_global_results"></svg>
+			<p>Ukupni broj glasova: <span class="badge votes-all">0</span></p>
 		</div>
 
 		<div class="col-md-6 text-center">
-			<h2>Trenutni rezultati vaših prijatelja (<span class="badge votes-friends">0</span> glasova)</h2>
+			<h2>Trenutni rezultati vaših prijatelja</h2>
 			<svg id="chart_friends_results"></svg>
+			<p>Ukupni broj glasova: <span class="badge votes-friends">0</span></p>
 		</div>
 
 		{% endif %}
@@ -468,26 +471,18 @@
 		function draw_results()
 		{
 			results = jQuery.parseJSON("{{ global_results }}".replace(/&#39;/g,"\""));
-			draw_aggreated_results(results, d3.select("#chart_global_results"));
-
-			var total_votes_all = results[0].value + results[1].value;
-
-			$('.votes-all').text(total_votes_all);
+			draw_aggreated_results_all(results, d3.select("#chart_global_results"));
 
 			friends_results = jQuery.parseJSON("{{ friends_results }}".replace(/&#39;/g,"\""));
 			
 			if(friends_results!=-1)
 			{
-				draw_aggreated_results(friends_results, d3.select("#chart_friends_results"));
-
-				var total_votes_friends = friends_results[0].value + friends_results[1].value;
-
-				$('.votes-friends').text(total_votes_friends);
+				draw_aggreated_results_friends(friends_results, d3.select("#chart_friends_results"));
 
 			}
 		}
 
-		function draw_aggreated_results(results, chart)
+		function draw_aggreated_results_all(results, chart)
         {
                 var mod_results = [
                         {'label': 'protiv', 'value': 0},
@@ -503,8 +498,34 @@
                         mod_results[results[1].vote].value = Number(results[1].vote_count);        
                 }                
 
+                var total_votes_all = mod_results[0].value + mod_results[1].value;
+                $('.votes-all').text(total_votes_all);
+
                 draw_piechart(mod_results, chart);
         }
+
+        function draw_aggreated_results_friends(results, chart)
+        {
+                var mod_results = [
+                        {'label': 'protiv', 'value': 0},
+                        {'label': 'za', 'value': 0},
+                ];
+
+                if(results.length >= 1)
+                {
+                        mod_results[results[0].vote].value = Number(results[0].vote_count);        
+                }
+                if(results.length == 2)
+                {                                
+                        mod_results[results[1].vote].value = Number(results[1].vote_count);        
+                }                
+
+                var total_votes_friends = mod_results[0].value + mod_results[1].value;
+                $('.votes-friends').text(total_votes_friends);
+
+                draw_piechart(mod_results, chart);
+        }
+
 
 		function change_btn_vote_style(vote_value)
 		{
