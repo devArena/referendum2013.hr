@@ -315,14 +315,14 @@ $(this).css({'min-height': max});
 		var ratio_protiv = data[0].value / total_votes;
 		var ratio_za = data[1].value / total_votes;
 
-		var t = data[0].value % total_votes;
-		if(t != 0 && (t < total_votes / 2)) {
-		  ratio_za += 1;
-		  } else {
-		  ratio_protiv += 1; }
-
 		var percentage_protiv = ratio_protiv *100;
 		var percentage_za = ratio_za *100;
+
+		var t = data[0].value % total_votes;
+		if(t != 0 && (t < total_votes / 2)) {
+		  percentage_za += 1;
+		  } else {
+		  percentage_protiv += 1; }
 
 
 		var arc = d3.svg.arc()
