@@ -43,14 +43,16 @@ class FacebookUserWithLocation(AbstractUser, FacebookModel):
     objects = UserManager()
     location = models.ForeignKey(Location, blank=True, null=True, related_name='+')
     hometown = models.ForeignKey(Location, blank=True, null=True, related_name='+')
+    fetched_location = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
-        if self.facebook_id is not None and self.access_token is not None and self.location is None:
+        if self.facebook_id is not None and self.access_token is not None and not self.fetched_location:
             query = 'SELECT hometown_location, current_location FROM user WHERE uid = {}'.format(self.facebook_id)
             facebook = OpenFacebook(self.access_token)
             result = facebook.fql(query)[0]
             self.location = Location.from_result(result['current_location'])
             self.hometown = Location.from_result(result['hometown_location'])
+            self.fetched_location = True
         super(FacebookUserWithLocation, self).save(*args, **kwargs)
 
 
