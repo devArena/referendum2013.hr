@@ -5,8 +5,12 @@ import os
 PROJECT_ROOT = os.getcwd()
 SITE_NAME = os.path.basename(PROJECT_ROOT)
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
+
+ALLOWED_HOSTS = (
+    '127.0.0.1',
+)
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
