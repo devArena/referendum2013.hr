@@ -35,7 +35,7 @@ def example(request):
         if len(votes) >= 1:
             vote = votes[0]
         else:
-            vote = None
+            vote = -1
 
         key = 'friends_{}'.format(request.user.id)
         result = cache.get(key)
@@ -65,12 +65,9 @@ def example(request):
             friends_results.append(row_as_dict)
 
     else:
-        vote = None
+        vote = -1
         #TODO: set null
         friends_results = -1
-
-    if vote is None:
-        vote = -1
 
     key = 'global_results'
     global_results = cache.get(key)
