@@ -20,6 +20,7 @@ urlpatterns = patterns('',
     #url(r'^friendsStressTest/$', views.friendsStressTest, name='friendsStressTest'),
     #url(r'^exampleStressTest/$', views.exampleStressTest, name='exampleStressTest'),
     url(r'^vote/$', views.vote, name='vote'),
+    url(r'^vote2/$', views.vote2, name='vote2'),
     url(r'^results/$', views.results, name='results'),
     url(r'^friends_results/$', views.friends_results, name='friends_results'),
 )

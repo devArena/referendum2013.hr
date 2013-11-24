@@ -25,8 +25,8 @@
 	href="http://referendum2013.hr/static/images/referendum2013-favicon.ico">
 <link rel="stylesheet"
 	href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
-<link rel="stylesheet"
-	href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap-theme.min.css">
+<!-- <link rel="stylesheet"
+	href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap-theme.min.css"> -->
 
 <link href="{{ STATIC_URL }}django_facebook/css/facebook.css"
 	type="text/css" rel="stylesheet" media="all" />
@@ -65,7 +65,7 @@
 }
 
 .text-question {
-	text-align: justify;
+	
 }
 </style>
 
@@ -173,27 +173,21 @@
 					<p class="lead text-question">Jeste li za to da se u Ustav Republike Hrvatske unese
 							odredba po kojoj je brak životna zajednica žene i muškarca?</p>
 					<!--form to call registration via facebook -->
-					<button id="btn_yes" class="btn btn-large btn btn-success" type="button">Za</button>
-					<button id="btn_no" class="btn btn-large btn btn-danger" type="button">Protiv</button>
-
-					<form id="form_vote" action="{% url 'referendum:vote' %}"
-						method="post">
-						{% csrf_token %} <input type="hidden" id="input_vote"
-							name="choice" value="-1">
-					</form>
-					{% if vote.vote == 1 %}
-					<p>Glasali ste ZA!</p>
-					{% elif vote.vote == 0 %}
-					<p>Glasali ste PROTIV!</p>
-					{% else %}
-					<p>Glasajte!</p>
-					{% endif %}
-
-					<div class="fb-like" data-href="http://referendum2013.hr"
-						data-width="200" data-layout="standard" data-action="like"
-						data-show-faces="true" data-share="true"></div>
-						
-					<div class="fb-share-button" data-href="http://referendum2013.hr" data-width="200" data-type="button_count"></div>
+					<div id="div_vote" class="text-center">
+					<button id="btn_yes" class="btn btn-large btn-default" 
+							type="button" style="Width:120px;font-size:x-large;margin:10px 20px 10px 20px;">Za</button>
+					<button id="btn_no" class="btn btn-large btn-default" style="Width:120px;font-size:x-large;margin:10px 20px 10px 20px;" 
+							type="button">Protiv</button>
+					</div>
+					
+					<div class="well well-sm" style="margin:20px 0px 20px 0px;">
+						<span id="vote_message"></span>	
+					</div>
+		
+ 
+					<div class="fb-like" data-href="http://referendum2013.hr/" data-layout="standard" data-action="like" data-show-faces="false" data-share="false"></div>
+					<div class="fb-share-button" data-href="http://referendum2013.hr/" data-width="100" data-type="button_count"
+					 style="display: block"></div>
 
 				</div>
 
@@ -262,18 +256,7 @@
 
 		<input type="hidden" id="global_results" value="{{ global_results }}">
 	</div>
-	<!-- /container -->
-	<!-- 
-<script type="text/javascript">
-var max = -1;
-$('.row > div').each(function() {
-var h = $(this).height(); 
-max = h > max ? h : max;
-        
-$(this).css({'min-height': max});
-});
-</script>
- -->
+	
 	<script
 		src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 
@@ -427,7 +410,61 @@ $(this).css({'min-height': max});
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script>
+		var current_vote = {{vote.vote}};
+
 		$(document).ready(function() {
+			draw_results();
+			init_controls();
+
+			change_btn_vote_style(current_vote);
+
+			change_vote_msg(current_vote);
+
+		});
+
+		function init_controls()
+		{
+			$("#btn_yes").click(function(e) {
+			user_vote(1);
+			});		
+
+			$("#btn_no").click(function(e) {
+				user_vote(0);
+			});
+
+			$('#btn_yes').hover(function () {
+				if(current_vote != 1)
+				{
+					$(this).removeClass('btn-default');
+		        	$(this).addClass('btn-success');
+		        }
+		        }, function () {
+		        	if(current_vote != 1)
+					{
+		            	$(this).removeClass('btn-success');
+		            	$(this).addClass('btn-default');
+		            }
+		    });		    	
+				
+
+			$('#btn_no').hover(function () {
+				if(current_vote != 0)
+				{
+					$(this).removeClass('btn-default');
+		        	$(this).addClass('btn-danger');
+		   		}
+		        }, function () {
+		        	if(current_vote != 0)
+					{
+		            	$(this).removeClass('btn-danger');
+		            	$(this).addClass('btn-default');
+		            }
+		    });		    	
+			
+		}
+
+		function draw_results()
+		{
 			results = jQuery.parseJSON("{{ global_results }}".replace(/&#39;/g,"\""));
 			draw_aggreated_results(results, d3.select("#chart_global_results"));
 
@@ -438,8 +475,7 @@ $(this).css({'min-height': max});
 			{
 				draw_aggreated_results(friends_results, d3.select("#chart_friends_results"));	
 			}
-		
-		});
+		}
 
 		function draw_aggreated_results(results, chart)
 		{
@@ -450,31 +486,164 @@ $(this).css({'min-height': max});
 
 			if(results.length >= 1)
 			{
-				mod_results[results[0].vote].value = Number(results[0].vote_count);	
+				mod_results[results[0].vote].value = results[0].vote_count;	
 			}
 			if(results.length == 2)
 			{				
-				mod_results[results[1].vote].value = Number(results[1].vote_count);	
+				mod_results[results[1].vote].value = results[1].vote_count;	
 			}		
 
 			draw_piechart(mod_results, chart);
 		}
+
+		function change_btn_vote_style(vote_value)
+		{
+			if(vote_value == 1)
+			{
+				$('#btn_yes').removeClass('btn-default');
+		        $('#btn_yes').addClass('btn-success');
+
+		        $('#btn_no').removeClass('btn-danger');
+		        $('#btn_no').addClass('btn-default');		        
+		    }
+		    else if(vote_value == 0)
+			{
+				$('#btn_no').removeClass('btn-default');
+		        $('#btn_no').addClass('btn-danger');
+
+		        $('#btn_yes').removeClass('btn-success');
+		        $('#btn_yes').addClass('btn-default');		        
+		    }
+		    else
+		    {
+		    	$('#btn_no').attr('class', 'btn btn-large btn-default');
+		    	$('#btn_yes').attr('class', 'btn btn-large btn-default');
+		    }
+		}
+
+		function change_vote_msg(vote_value)
+		{
+			var note = ' Ako želite možete promijeniti glas. Samo je zadnji glas važeći.';
+			if(current_vote == 0)
+				$('#vote_message').text('Glasali ste PROTIV!' + note);
+			else if(current_vote == 1)
+				$('#vote_message').text('Glasali ste ZA!' + note);
+			else
+				$('#vote_message').text('Još niste dali svoj glas!');			
+		}
+
+	</script>
+	
+	<script type="text/javascript">
+
+	function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+	}
+	var csrftoken = getCookie('csrftoken');
+
+	function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	}
+
+	function sameOrigin(url) {
+    // test that a given url is a same-origin URL
+    // url could be relative or scheme relative or absolute
+    var host = document.location.host; // host + port
+    var protocol = document.location.protocol;
+    var sr_origin = '//' + host;
+    var origin = protocol + sr_origin;
+    // Allow absolute or scheme relative URLs to same origin
+    return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+        (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+        // or any other URL that isn't scheme relative or absolute i.e relative.
+        !(/^(\/\/|http:|https:).*/.test(url));
+	}
+
+	$.ajaxSetup({
+	    crossDomain: false, // obviates need for sameOrigin test
+	    beforeSend: function(xhr, settings) {
+	        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+	            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+	        }
+	    }
+	});
+
 	</script>
 
-	<script>
-		$("#btn_yes").click(function(e) {
-			$("#input_vote").val(1);
-			$("#form_vote").submit();
-		});
+	<script type="text/javascript">
+	
+	function user_vote(vote_value)
+	{
 
-		$("#btn_no").click(function(e) {
-			$("#input_vote").val(0);
-			$("#form_vote").submit();
-		});
+		var data = 'vote=' + vote_value;
+
+		//start the ajax
+        $.ajax({
+            //this is the php file that processes the data and send mail
+            url: "http://localhost:8080/vote2/", 
+             
+            //GET method is used
+            type: "POST",
+ 
+            //pass the data         
+            data: data,     
+             
+            //Do not cache the page
+            cache: true,
+            
+            //dataType: 'json',
+            
+            //success
+            success: function (data, textStatus, jqXHR) {              
+
+                /*
+                summary = JSON.parse(data, function (key, value) {
+                    var type;
+                    if (value && typeof value === 'object') {
+                        type = value.type;
+                        if (typeof type === 'string' && typeof window[type] === 'function') {
+                            return new (window[type])(value);
+                        }
+                    }
+                    return value;
+                });
+                */
+                //WE USE dataType: 'json', already javascript object
+
+                //alert(data);
+
+                current_vote = data;
+                change_btn_vote_style(current_vote);
+                change_vote_msg(current_vote);
+                             
+            },
+
+            complete: function (jqXHR, textStatus){
+            
+                //alert("complete");
+            },
+
+            error: function(jqXHR, textStatus, errorThrown){
+
+                alert("error");
+            }            
+        });
+	}
+
 	</script>
-	
-	
-	
 
 	<script
 		src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>

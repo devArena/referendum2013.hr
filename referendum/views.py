@@ -16,6 +16,7 @@ from django.http import Http404
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
+from django.views.decorators.http import require_http_methods
 
 from referendum.models import Vote, ActiveVote,FacebookUserWithLocation
 from referendum import tasks
@@ -121,4 +122,24 @@ def vote(request):
         return HttpResponseBadRequest('ERROR 400: Zlocko! Note to self: Napisi ovo do kraja.')
     tasks.save_vote.delay(request.user.facebook_id, vote)
     return HttpResponseRedirect(reverse('referendum:example'))
+
+@login_required
+@require_http_methods(["POST"])
+def vote2(request):
+
+    if not request.user.is_authenticated():
+        raise PermissionDenied
+    
+    vote = -1
+
+    try:
+        vote = int(request.POST['vote'])
+        if vote < 0 or vote > 1 :
+            return HttpResponseBadRequest('ERROR 400')
+        tasks.save_vote.delay(request.user.facebook_id, vote)
+    except (KeyError, ValueError) as e:
+        return HttpResponseBadRequest('ERROR 400')   
+
+    #cache.set(key, result)
+    return HttpResponse(vote)
 
