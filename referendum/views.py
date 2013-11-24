@@ -69,6 +69,9 @@ def example(request):
         #TODO: set null
         friends_results = -1
 
+    if vote is None:
+        vote = -1
+
     key = 'global_results'
     global_results = cache.get(key)
     if global_results is None:
