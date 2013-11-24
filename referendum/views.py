@@ -12,17 +12,19 @@ from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db import connection
 from django.db.models import Count
-from django.http import Http404
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.http import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render_to_response
 from django.template.context import RequestContext
 from django.views.decorators.http import require_http_methods
 
+from django_facebook.decorators import facebook_required_lazy
+from open_facebook import exceptions as FacebookException
+from open_facebook.api import *
+
+from project.settings import FACEBOOK_APP_ID
+
 from referendum.models import Vote, ActiveVote,FacebookUserWithLocation
 from referendum import tasks
-from django_facebook.models import FacebookUser
-from django.contrib.auth.models import User
-from django_facebook.tasks import store_friends
 
 def example(request):
     #TODO: Jako glupo ali neka zasad bude ovako.
@@ -69,7 +71,7 @@ def example(request):
         #TODO: set null
         friends_results = -1
 
-  
+
     if vote is None:
 	vote_value = -1
     else:
@@ -134,7 +136,7 @@ def vote(request):
 
     if not request.user.is_authenticated():
         raise PermissionDenied
-    
+
     vote = -1
 
     try:
@@ -143,8 +145,38 @@ def vote(request):
             return HttpResponseBadRequest('ERROR 400')
         tasks.save_vote.delay(request.user.facebook_id, vote)
     except (KeyError, ValueError) as e:
-        return HttpResponseBadRequest('ERROR 400')   
+        return HttpResponseBadRequest('ERROR 400')
 
     #cache.set(key, result)
     return HttpResponse(vote)
+
+@facebook_required_lazy(scope=['publish_actions'])
+def post_og_actions(request):
+    if not request.user.is_authenticated():
+        raise PermissionDenied
+
+    vote = get_object_or_404(ActiveVote, facebook_id=request.user.facebook_id)
+
+    data = {}
+    data['app_id'] = FACEBOOK_APP_ID
+    data['url'] = 'http://referendum2013.hr'
+    data['title'] = 'Za' if vote.vote == 1 else 'Protiv'
+    data['image'] = 'http://referendum2013.hr/static/images/logo.png'
+    data['description'] = '''{} {} je glasa{} {}.
+Medu njegovim prijateljima, trenutno je {}% ZA, a {}% PROTIV. Sudjeluj i ti!'''.format(
+        request.user.first_name,
+        request.user.last_name,
+        'o' if request.user.gender == 'm' else 'la' ,
+        'ZA' if vote.vote == 1 else 'PROTIV',
+        49,
+        51,
+    )
+
+    facebook = OpenFacebook(request.user.access_token)
+    facebook.set(
+        '/me/objects/referendum_hr:vote',
+        object=data
+    )
+
+    return HttpResponseRedirect(reverse('referendum:example'))
 

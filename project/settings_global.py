@@ -5,7 +5,7 @@ import os
 PROJECT_ROOT = os.getcwd()
 SITE_NAME = os.path.basename(PROJECT_ROOT)
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ALLOWED_HOSTS = (
@@ -196,4 +196,5 @@ FACEBOOK_DEFAULT_SCOPE = [
     'user_website',
     'user_hometown',
     'user_location',
+    'publish_actions',
 ]

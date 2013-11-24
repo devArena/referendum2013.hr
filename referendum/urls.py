@@ -23,4 +23,5 @@ urlpatterns = patterns('',
     url(r'^vote2/$', views.vote2, name='vote2'),
     url(r'^results/$', views.results, name='results'),
     url(r'^friends_results/$', views.friends_results, name='friends_results'),
+    url(r'^og_action/$', views.post_og_actions, name='og_action'),
 )
