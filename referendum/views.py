@@ -131,7 +131,7 @@ def stressTest(request):
 	cursor=connection.cursor()
 	while (count!=0):
 		user_id=random.randint(1,30001)
-		print user_id
+		#print user_id
 		cursor.execute(
 		'SELECT COUNT(*) ' +
 		'FROM referendum_facebookuserwithlocation AS fb ' +
@@ -143,10 +143,10 @@ def stressTest(request):
 		#print user_id
 		result = re.findall(r'[0-9]+', count)
 		count=map(int, result)[0]
-		print count
+		#print count
 	
 	#user_id=5
-	username=''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(random.randint(1,21)))
+	username=''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(random.randint(5,26)))
 	first_name='firstname'
 	last_name='lastname'
 	email='email'
