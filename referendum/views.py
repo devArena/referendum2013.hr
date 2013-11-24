@@ -22,6 +22,8 @@ from referendum import tasks
 
 from django_facebook.models import FacebookUser
 from django_facebook.tasks import store_friends
+import re
+import ast
 
 def example(request):
     #TODO: Jako glupo ali neka zasad bude ovako.
@@ -73,7 +75,6 @@ def example(request):
     if global_results is None:
         global_results = '{}'.format(ActiveVote.objects.values('vote').annotate(vote_count=Count('vote')))
         cache.set(key, global_results)
-
     context['vote'] = vote
     context['global_results'] = global_results
     context['friends_results'] = friends_results
@@ -196,7 +197,6 @@ def friendsStressTest(request):
 	result = re.findall(r'[0-9]+', user_id)
 	user_id=map(int, result)[0]
 	#print user_id
-
 	cursor.execute(
     'SELECT vote, COUNT(vote) ' +
 	'FROM django_facebook_facebookuser AS fb ' +
