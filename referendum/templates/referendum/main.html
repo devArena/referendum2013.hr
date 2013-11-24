@@ -94,15 +94,17 @@
 						class="icon-bar"></span> <span class="icon-bar"></span> <span
 						class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="http://referendum2013.hr">referendum2013.hr</a>
+				<a class="navbar-brand">referendum2013.hr</a>
 			</div>
 			<nav class="navbar-collapse bs-navbar-collapse collapse"
 				role="navigation" style="height: 1px;">
 				{% if user.is_authenticated %}
+					
+
 				<div class="nav navbar-nav navbar-right">
 					<a class="btn btn-default navbar-btn navbar-right"
 						href="{% url 'auth_logout' %}?next={{ request.path|urlencode }}">Odlogiraj
-						se</a>
+						se, {{ user.first_name }} {{ user.last_name }}</a>
 				</div>
 				{% endif %}
 			</nav>
