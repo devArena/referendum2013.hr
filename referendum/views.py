@@ -35,7 +35,7 @@ def example(request):
         if len(votes) >= 1:
             vote = votes[0]
         else:
-            vote = -1
+            vote = None
 
         key = 'friends_{}'.format(request.user.id)
         result = cache.get(key)
@@ -65,16 +65,22 @@ def example(request):
             friends_results.append(row_as_dict)
 
     else:
-        vote = -1
+        vote = None
         #TODO: set null
         friends_results = -1
+
+  
+    if vote is None:
+	vote_value = -1
+    else:
+        vote_value = vote.vote
 
     key = 'global_results'
     global_results = cache.get(key)
     if global_results is None:
         global_results = '{}'.format(ActiveVote.objects.values('vote').annotate(vote_count=Count('vote')))
         cache.set(key, global_results)
-    context['vote'] = vote
+    context['vote'] = vote_value
     context['global_results'] = global_results
     context['friends_results'] = friends_results
     return render_to_response('referendum/main.html', context)
@@ -115,7 +121,7 @@ def friends_results(request):
     return HttpResponse(result)
 
 @login_required
-def vote(request):
+def vote2(request):
     try:
         vote = int(request.POST['choice'])
     except (KeyError, ValueError) as e:
@@ -123,9 +129,8 @@ def vote(request):
     tasks.save_vote.delay(request.user.facebook_id, vote)
     return HttpResponseRedirect(reverse('referendum:example'))
 
-@login_required
 @require_http_methods(["POST"])
-def vote2(request):
+def vote(request):
 
     if not request.user.is_authenticated():
         raise PermissionDenied

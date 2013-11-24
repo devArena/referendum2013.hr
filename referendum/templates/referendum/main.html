@@ -410,9 +410,7 @@
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script>
-		var current_vote = -1;
-		if('{{vote}}' != 'None')
-			current_vote = {{vote}};
+		var current_vote = {{vote}};
 
 		$(document).ready(function() {
 			draw_results();
@@ -595,7 +593,7 @@
 		//start the ajax
         $.ajax({
             //this is the php file that processes the data and send mail
-            url: "http://referendum2013.hr/vote2/", 
+            url: "http://referendum2013.hr/vote/", 
              
             //GET method is used
             type: "POST",
@@ -640,7 +638,8 @@
 
             error: function(jqXHR, textStatus, errorThrown){
 
-                alert("error");
+                alert(textStatus);
+		console.log(errorThrown);
             }            
         });
 	}
