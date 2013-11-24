@@ -123,7 +123,7 @@
 				<!-- <div class="jumbotron">  -->
 				<div class="well">
 					<h2>Referendum 2013</h2>
-					<p class="lead">Prijavite se s Facebookom, glasajte i saznajte
+					<p class="lead">Prijavite se putem Facebooka, glasajte i saznajte
 						što vaši prijatelji i ostali misle o ovoj temi.</p>
 					<!--form to call registration via facebook -->
 					<form action="{% url 'facebook_connect' %}" method="post">
@@ -131,8 +131,8 @@
 							name="next" />
 						<p>
 							<a class="btn btn-lg btn-default" role="button"
-								onclick="F.connect(this.parentNode.parentNode); return false;">Prijavi
-								se preko Facebooka</a>
+								onclick="F.connect(this.parentNode.parentNode); return false;">Prijavite
+								se putem Facebooka</a>
 						</p>
 					</form>
 					<div class="fb-like" data-href="http://referendum2013.hr"
@@ -146,12 +146,12 @@
 						<h5>
 							<small>
 								<p class="muted">U svrhu ovoga istraživanja prikupljamo
-									podatke o vašem stavu o referendumskom pitanju, kao i o vašem
-									facebook profilu (godina rođenja, lokacija, spol i popis vaših
-									prijatelja), čime želimo dobiti uvid u načine kako međusobna
+									podatke o vašem stavu o referendumskom pitanju, kao i o određene
+									podatke s facebooka (godinu rođenja, lokaciju, spol i popis vaših
+									prijatelja) čime želimo dobiti uvid u načine kako međusobna
 									poznanstva utječu na stavove korisnika facebooka. Vaš
 									individualni odgovor na referendumsko pitanje i podaci o vašem
-									profilu neće biti vidljiv drugim korisnicima, nego će samo biti
+									profilu neće biti vidljivi drugim korisnicima, nego će samo biti
 									vidljiv anonimni prosjek odgovora. Jedino ćete vi vidjeti
 									prosjek odgovara vaših prijatelja. Istraživači garantiraju da
 									prikupljeni podaci neće biti korišteni ni u koje druge svrhe
@@ -236,7 +236,7 @@
 			<div class="col-md-6">
 				<h2>O Projektu</h2>
 				<p>Ova web stranica predstavlja dio znanstvenoga istraživanja u
-					području socijalnih mreža. Cilj ovoga istraživanja je utvrditi kako
+					području socijalnih mreža. Cilj je ovoga istraživanja utvrditi kako
 					stav okoline utječe na stav pojedinca te kako se širi vijest u
 					socijalnim mrežama.</p>
 
@@ -244,7 +244,7 @@
 			<div class="col-md-6">
 				<h2>O Nama</h2>
 				<p>Ova web stranica predstavlja dio znanstvenoga istraživanja u
-					području socijalnih mreža. Cilj ovoga istraživanja je utvrditi kako
+					području socijalnih mreža. Cilj je ovoga istraživanja utvrditi kako
 					stav okoline utječe na stav pojedinca te kako se širi vijest u
 					socijalnim mrežama.</p>
 			</div>
@@ -312,11 +312,18 @@ $(this).css({'min-height': max});
 		if (total_votes >= 3 )
 		{
 
-		var percentage_protiv = (data[0].value / total_votes)*100;
-		var percentage_za = (data[1].value / total_votes)*100;
-
 		var ratio_protiv = data[0].value / total_votes;
 		var ratio_za = data[1].value / total_votes;
+
+		var t = data[0].value % total_votes;
+		if(t != 0 && (t < total_votes / 2)) {
+		  ratio_za += 1;
+		  } else {
+		  ratio_protiv += 1; }
+
+		var percentage_protiv = ratio_protiv *100;
+		var percentage_za = ratio_za *100;
+
 
 		var arc = d3.svg.arc()
 		    .innerRadius(radius - 0.45*radius)
