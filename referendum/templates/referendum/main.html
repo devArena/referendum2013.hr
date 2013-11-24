@@ -366,7 +366,7 @@ $(this).css({'min-height': max});
 		    .duration(2000)
 		    .tween("text", 
 		      function() {
-		          var i = d3.interpolate(this.textContent, Math.floor(percentage_za));
+		          var i = d3.interpolate(this.textContent, Math.round(percentage_za));
 		      return function(t) {
 		              this.textContent = "ZA " + Math.round(i(t)) + "%";
 		              };
@@ -385,7 +385,7 @@ $(this).css({'min-height': max});
 		    .duration(2000)
 		    .tween("text", 
 		      function() {
-		          var i = d3.interpolate(this.textContent, Math.floor(percentage_protiv));
+		          var i = d3.interpolate(this.textContent, Math.round(percentage_protiv));
 		      return function(t) {
 		              this.textContent = "PROTIV " + Math.round(i(t)) + "%";
 		              };
