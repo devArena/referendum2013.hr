@@ -26,7 +26,7 @@ def create_profile(sender, instance, created, **kwargs):
     if sender == get_user_model():
         user = instance
         if user.facebook_id is not None:
-            query = 'SELECT hometown_location FROM user WHERE uid = {}'.format(user.facebook_id)
+            query = 'SELECT hometown_location, current_location FROM user WHERE uid = {}'.format(user.facebook_id)
             print user.access_token
             facebook = OpenFacebook(user.access_token)
             print facebook.fql(query)

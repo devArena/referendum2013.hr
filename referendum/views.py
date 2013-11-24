@@ -1,7 +1,11 @@
+import ast
 import datetime
+import random
+import re
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
@@ -16,12 +20,8 @@ from django.template.context import RequestContext
 from referendum.models import Vote, ActiveVote
 from referendum import tasks
 
-import random
 from django_facebook.models import FacebookUser
-from django.contrib.auth.models import User
 from django_facebook.tasks import store_friends
-import re
-import ast
 
 def example(request):
     #TODO: Jako glupo ali neka zasad bude ovako.
@@ -54,14 +54,14 @@ def example(request):
         #TODO: Ovo je lose!
         #TODO: Nepotrebna konverzija: arr of tuples --> string --> row_as_dict
         #TODO: Potrebno je postaviti row_as_dict u cache, a ne pretacunavati
-        friends_rows = list(ast.literal_eval(result))   
+        friends_rows = list(ast.literal_eval(result))
         friends_results= []
 
         for row in friends_rows:
             row_as_dict = {
                 'vote' : row[0],
                 'vote_count' : str(row[1])}
-            friends_results.append(row_as_dict)   
+            friends_results.append(row_as_dict)
 
     else:
         vote = None
@@ -73,7 +73,7 @@ def example(request):
     if global_results is None:
         global_results = '{}'.format(ActiveVote.objects.values('vote').annotate(vote_count=Count('vote')))
         cache.set(key, global_results)
-  
+
     context['vote'] = vote
     context['global_results'] = global_results
     context['friends_results'] = friends_results
@@ -196,7 +196,7 @@ def friendsStressTest(request):
 	result = re.findall(r'[0-9]+', user_id)
 	user_id=map(int, result)[0]
 	#print user_id
-	
+
 	cursor.execute(
     'SELECT vote, COUNT(vote) ' +
 	'FROM django_facebook_facebookuser AS fb ' +
@@ -207,5 +207,5 @@ def friendsStressTest(request):
 	)
 	result = '{}'.format(cursor.fetchall())
 	#print result
-	
+
 	return HttpResponse(result)
