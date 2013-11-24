@@ -410,7 +410,9 @@
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script>
-		var current_vote = {{vote}};
+		var current_vote = -1;
+		if('{{vote}}' != 'None')
+			current_vote = {{vote}};
 
 		$(document).ready(function() {
 			draw_results();
