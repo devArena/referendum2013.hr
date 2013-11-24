@@ -131,6 +131,7 @@ def vote2(request):
     tasks.save_vote.delay(request.user.facebook_id, vote)
     return HttpResponseRedirect(reverse('referendum:example'))
 
+@login_required
 @require_http_methods(["POST"])
 def vote(request):
 
