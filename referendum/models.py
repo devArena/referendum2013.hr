@@ -10,9 +10,33 @@ from open_facebook.api import *
 class Location(models.Model):
     id = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    country = models.CharField(max_length=255)
+    zip = models.CharField(max_length=255)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
 
     def __unicode__(self):
-        return self.name
+        return '{} ({},{})'.format(self.name, self.latitude, self.longitude)
+
+    @classmethod
+    def from_result(cls, data):
+        if data is None:
+            return None
+        try:
+            return cls.objects.get(id=data['id'])
+        except cls.DoesNotExist:
+            o = cls(
+                id=data['id'],
+                name=data['name'],
+                city=data['city'],
+                country=data['country'],
+                zip=data['zip'],
+                latitude=data['latitude'],
+                longitude=data['longitude'],
+            )
+            o.save()
+            return o
 
 
 class FacebookUserWithLocation(AbstractUser, FacebookModel):
@@ -20,16 +44,14 @@ class FacebookUserWithLocation(AbstractUser, FacebookModel):
     location = models.ForeignKey(Location, blank=True, null=True, related_name='+')
     hometown = models.ForeignKey(Location, blank=True, null=True, related_name='+')
 
-
-@receiver(post_save)
-def create_profile(sender, instance, created, **kwargs):
-    if sender == get_user_model():
-        user = instance
-        if user.facebook_id is not None:
-            query = 'SELECT hometown_location, current_location FROM user WHERE uid = {}'.format(user.facebook_id)
-            print user.access_token
-            facebook = OpenFacebook(user.access_token)
-            print facebook.fql(query)
+    def save(self, *args, **kwargs):
+        if self.facebook_id is not None and self.access_token is not None and self.location is None:
+            query = 'SELECT hometown_location, current_location FROM user WHERE uid = {}'.format(self.facebook_id)
+            facebook = OpenFacebook(self.access_token)
+            result = facebook.fql(query)[0]
+            self.location = Location.from_result(result['current_location'])
+            self.hometown = Location.from_result(result['hometown_location'])
+        super(FacebookUserWithLocation, self).save(*args, **kwargs)
 
 
 class Vote(models.Model):

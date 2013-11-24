@@ -186,6 +186,10 @@ FACEBOOK_CELERY_STORE = True
 FACEBOOK_CELERY_TOKEN_EXTEND = True
 
 FACEBOOK_DEFAULT_SCOPE = [
-    'email', 'user_about_me', 'user_birthday', 'user_website',
-    'user_hometown', 'user_location', 'publish_actions'
+    'email',
+    'user_about_me',
+    'user_birthday',
+    'user_website',
+    'user_hometown',
+    'user_location',
 ]
