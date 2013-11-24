@@ -17,9 +17,11 @@ from referendum.models import Vote, ActiveVote
 from referendum import tasks
 
 import random
-from django_facebook.models import FacebookUser
+from django_facebook.models import FacebookUser,FacebookCustomUser
 from django.contrib.auth.models import User
 from django_facebook.tasks import store_friends
+import string
+import random
 import re
 import ast
 
@@ -127,16 +129,33 @@ def stressTest(request):
 	#Only for testing Remove in deploy version
 	userList=range(1,30001)
 	random.shuffle(userList)
-	num_friends=random.randint(1,500)
-	user_id=random.randint(1,30000)
+	num_friends=random.randint(1,501)
+	count=1
+	cursor=connection.cursor()
+	while (count!=0):
+		user_id=random.randint(1,30001)
+		print user_id
+		cursor.execute(
+		'SELECT COUNT(*) ' +
+		'FROM django_facebook_facebookcustomuser AS fb ' +
+		'WHERE fb.id=%s ' +
+		'LIMIT 1',
+		[user_id]
+		)
+		count='{}'.format(cursor.fetchall())
+		#print user_id
+		result = re.findall(r'[0-9]+', count)
+		count=map(int, result)[0]
+		print count
+	
 	#user_id=5
-	username='netkoinesto'
+	username=''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(random.randint(1,21)))
 	first_name='firstname'
 	last_name='lastname'
 	email='email'
 	password='password'
 	last_login=datetime.datetime.now()
-	us=User(
+	us=FacebookCustomUser(
         id=user_id,
         username=username,
         first_name=first_name,
@@ -147,8 +166,10 @@ def stressTest(request):
         is_active=1,
         is_superuser=0,
         last_login=last_login,
-        date_joined=last_login
+        date_joined=last_login,
+		facebook_id=user_id
     )
+	us.save()
 	friends=[]
 
 	for i in range(1, num_friends+1):
@@ -202,10 +223,76 @@ def friendsStressTest(request):
 	'FROM django_facebook_facebookuser AS fb ' +
 	'JOIN referendum_activevote AS v ' +
 	'ON fb.facebook_id = v.facebook_id ' +
-	'WHERE fb.user_id=user_id ' +
-	'GROUP BY vote'
+	'WHERE fb.user_id=%s ' +
+	'GROUP BY vote',
+	[user_id]
 	)
 	result = '{}'.format(cursor.fetchall())
 	#print result
 	
 	return HttpResponse(result)
+	
+def exampleStressTest(request):
+	#TODO: Jako glupo ali neka zasad bude ovako.
+	#TODO: Koristiti funkcije results i friends_results s xhr
+	#TODO: Staviti cache za friends_results
+	context = RequestContext(request)
+    #if request.user.is_authenticated():
+        #TODO: makni filter
+		
+	cursor=connection.cursor()
+	cursor.execute(
+		'SELECT user_id ' +
+		'FROM django_facebook_facebookuser ' +
+		'ORDER BY RANDOM() ' +
+		'LIMIT 1'
+	)
+	user_id='{}'.format(cursor.fetchall())
+	#print user_id
+	result = re.findall(r'[0-9]+', user_id)
+	user_id=map(int, result)[0]
+	#print user_id
+	
+	votes = Vote.objects.filter(facebook_id=user_id).order_by('-date')
+	if len(votes) >= 1:
+		vote = votes[0]
+	else:
+		vote = None
+		
+	key = 'friends_{}'.format(user_id)
+	result = cache.get(key)
+	if result is None:
+		cursor = connection.cursor()
+		cursor.execute(
+			'SELECT vote, COUNT(vote) ' +
+			'FROM django_facebook_facebookuser AS fb ' +
+			'JOIN referendum_activevote AS v ' +
+			'ON fb.facebook_id = v.facebook_id ' +
+			'WHERE fb.user_id=%s ' +
+			'GROUP BY vote', [user_id]
+		)
+		result = '{}'.format(cursor.fetchall())
+		cache.set(key, result)
+
+        #TODO: Ovo je lose!
+        #TODO: Nepotrebna konverzija: arr of tuples --> string --> row_as_dict
+        #TODO: Potrebno je postaviti row_as_dict u cache, a ne pretacunavati
+	friends_rows = list(ast.literal_eval(result))   
+	friends_results= []
+
+	for row in friends_rows:
+		row_as_dict = {
+			'vote' : row[0],
+			'vote_count' : str(row[1])}
+		friends_results.append(row_as_dict)   
+
+	key = 'global_results'
+	global_results = cache.get(key)
+	if global_results is None:
+		global_results = '{}'.format(ActiveVote.objects.values('vote').annotate(vote_count=Count('vote')))
+		cache.set(key, global_results)
+  
+	context['vote'] = vote
+	context['global_results'] = global_results
+	context['friends_results'] = friends_results
+	return render_to_response('referendum/main.html', context)
