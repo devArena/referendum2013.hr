@@ -664,6 +664,7 @@
                 current_vote = data;
                 change_btn_vote_style(current_vote);
                 change_vote_msg(current_vote);
+                draw_results();
                              
             },
 
@@ -674,8 +675,8 @@
 
             error: function(jqXHR, textStatus, errorThrown){
 
-                alert(textStatus);
-		console.log(errorThrown);
+  //               alert(textStatus);
+		// console.log(errorThrown);
             }            
         });
 	}
