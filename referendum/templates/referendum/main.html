@@ -324,7 +324,7 @@ $(this).css({'min-height': max});
 		var t = data[0].value % total_votes;
 		if(t != 0 && (t < total_votes / 2)) {
 		  percentage_za += 1;
-		  } else {
+		  } else if(t != 0) {
 		  percentage_protiv += 1; }
 
 
