@@ -69,7 +69,7 @@ def example(request):
         #TODO: set null
         friends_results = -1
 
-  
+
     if vote is None:
 	vote_value = -1
     else:
@@ -83,7 +83,7 @@ def example(request):
     context['vote'] = vote_value
     context['global_results'] = global_results
     context['friends_results'] = friends_results
-    return render_to_response('referendum/main.html', context)
+    return render_to_response('main.html', context)
 
 def results(request):
     #TODO: vrati JSON
@@ -135,7 +135,7 @@ def vote(request):
 
     if not request.user.is_authenticated():
         raise PermissionDenied
-    
+
     vote = -1
 
     try:
@@ -144,7 +144,7 @@ def vote(request):
             return HttpResponseBadRequest('ERROR 400')
         tasks.save_vote.delay(request.user.facebook_id, vote)
     except (KeyError, ValueError) as e:
-        return HttpResponseBadRequest('ERROR 400')   
+        return HttpResponseBadRequest('ERROR 400')
 
     #cache.set(key, result)
     return HttpResponse(vote)
