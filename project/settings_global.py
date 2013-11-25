@@ -8,9 +8,13 @@ SITE_NAME = os.path.basename(PROJECT_ROOT)
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
-ALLOWED_HOSTS = (
+USE_X_FORWARDED_HOST = True
+
+ALLOWED_HOSTS = [
     '127.0.0.1',
-)
+    'referendum2013.hr',
+    '.referendum2013.hr',
+]
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
