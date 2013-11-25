@@ -23,8 +23,9 @@ from open_facebook.api import *
 
 from project.settings import FACEBOOK_APP_ID
 
-from referendum.models import Vote, ActiveVote,FacebookUserWithLocation
 from referendum import tasks
+from referendum.models import Vote, ActiveVote, FacebookUserWithLocation
+from referendum.utils import get_percentages
 
 def example(request):
     #TODO: Jako glupo ali neka zasad bude ovako.
@@ -157,27 +158,36 @@ def post_og_actions(request):
         raise PermissionDenied
 
     vote = get_object_or_404(ActiveVote, facebook_id=request.user.facebook_id)
+    (friends_percentages, global_percentages) = get_percentages(request.user.id)
 
     data = {}
     data['app_id'] = FACEBOOK_APP_ID
-    data['url'] = 'http://referendum2013.hr'
+    data['url'] = 'http://referendum2013.hr/'
+    #TODO: FB pokupi title sa URL-a. To ne zelimo, pa trebamo nekako rijesiti.
     data['title'] = 'Za' if vote.vote == 1 else 'Protiv'
     data['image'] = 'http://referendum2013.hr/static/images/logo.png'
+    data['type'] = 'referendum_hr:vote'
+
+    #TODO: Sto ako nema dovoljno glasova? -> nadji bolje tekstove
     data['description'] = '''{} {} je glasa{} {}.
-Medu njegovim prijateljima, trenutno je {}% ZA, a {}% PROTIV. Sudjeluj i ti!'''.format(
+Ukupno je {}% ZA, a {}% PROTIV.
+Sudjeluj i ti!'''.format(
         request.user.first_name,
         request.user.last_name,
         'o' if request.user.gender == 'm' else 'la' ,
         'ZA' if vote.vote == 1 else 'PROTIV',
-        49,
-        51,
+        global_percentages[1],
+        global_percentages[0],
     )
 
-    facebook = OpenFacebook(request.user.access_token)
-    facebook.set(
-        '/me/objects/referendum_hr:vote',
-        object=data
-    )
+    print data
+    print request.user.access_token
+    #facebook = OpenFacebook(request.user.access_token)
+    #facebook.set(
+    #    '/me/objects/referendum_hr:vote',
+    #    object=data
+    #)
 
+    return HttpResponse(data)
     return HttpResponseRedirect(reverse('referendum:example'))
 
