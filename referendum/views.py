@@ -12,17 +12,13 @@ from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db import connection
 from django.db.models import Count
-from django.http import Http404
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.views.decorators.http import require_http_methods
 
-from referendum.models import Vote, ActiveVote,FacebookUserWithLocation
+from referendum.models import ActiveVote, FacebookUserWithLocation, Vote
 from referendum import tasks
-from django_facebook.models import FacebookUser
-from django.contrib.auth.models import User
-from django_facebook.tasks import store_friends
 
 def example(request):
     #TODO: Jako glupo ali neka zasad bude ovako.
@@ -30,13 +26,11 @@ def example(request):
     #TODO: Staviti cache za friends_results
     context = RequestContext(request)
     if request.user.is_authenticated():
-        #TODO: makni filter
-        votes = Vote.objects.filter(facebook_id=request.user.facebook_id).order_by('-date')
-        if len(votes) >= 1:
-            vote = votes[0]
-        else:
+        #TODO: spremi vote u cache!
+        try:
+            vote = ActiveVote.objects.get(facebook_id=request.user.facebook_id)
+        except ObjectDoesNotExist:
             vote = None
-
         key = 'friends_{}'.format(request.user.id)
         result = cache.get(key)
         if result is None:
@@ -51,24 +45,20 @@ def example(request):
                 )
             result = '{}'.format(cursor.fetchall())
             cache.set(key, result)
-
         #TODO: Ovo je lose!
         #TODO: Nepotrebna konverzija: arr of tuples --> string --> row_as_dict
         #TODO: Potrebno je postaviti row_as_dict u cache, a ne pretacunavati
         friends_rows = list(ast.literal_eval(result))
         friends_results= []
-
         for row in friends_rows:
             row_as_dict = {
                 'vote' : row[0],
                 'vote_count' : str(row[1])}
             friends_results.append(row_as_dict)
-
     else:
         vote = None
         #TODO: set null
         friends_results = -1
-
 
     if vote is None:
     	vote_value = -1
@@ -83,7 +73,11 @@ def example(request):
     context['vote'] = vote_value
     context['global_results'] = global_results
     context['friends_results'] = friends_results
-    return render_to_response('main.html', context)
+
+    if request.user.is_authenticated():
+        return render_to_response('main.html', context)
+    else:
+        return render_to_response('logged_out.html', context)
 
 def results(request):
     #TODO: vrati JSON

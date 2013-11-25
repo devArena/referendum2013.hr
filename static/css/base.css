@@ -1,0 +1,35 @@
+#logo {
+	text-align: center;
+	vertical-align: baseline;
+	margin-top: 20px;
+}
+
+.header-logo {
+	display: inline-block;
+	height: auto;
+	max-width: 100%;
+	line-height: 1.42857;
+	transition: all 0.2s ease-in-out 0s;
+}
+
+#login {
+	vertical-align: baseline;
+	margin-top: 20px;
+}
+
+.jumbotron {
+	text-align: center;
+}
+
+.pagination-centered {
+	text-align: center;
+}
+
+.text-disclaimer {
+	text-align: justify;
+}
+
+.text-question {
+	
+}
+
