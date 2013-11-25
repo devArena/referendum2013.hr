@@ -71,7 +71,7 @@ def example(request):
 
 
     if vote is None:
-	vote_value = -1
+    	vote_value = -1
     else:
         vote_value = vote.vote
 
