@@ -5,8 +5,16 @@ import os
 PROJECT_ROOT = os.getcwd()
 SITE_NAME = os.path.basename(PROJECT_ROOT)
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
+
+USE_X_FORWARDED_HOST = True
+
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'referendum2013.hr',
+    '.referendum2013.hr',
+]
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -136,13 +144,21 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
+        'console' : {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler'
+        },
     },
     'loggers': {
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
+        },
+        'open_facebook.utils': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
         },
     }
 }
@@ -167,7 +183,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-AUTH_USER_MODEL = 'django_facebook.FacebookCustomUser'
+AUTH_USER_MODEL = 'referendum.FacebookUserWithLocation'
 
 FACEBOOK_STORE_FRIENDS = True
 
@@ -177,3 +193,11 @@ FACEBOOK_CELERY_STORE = True
 # use celery for extending tokens
 FACEBOOK_CELERY_TOKEN_EXTEND = True
 
+FACEBOOK_DEFAULT_SCOPE = [
+    'email',
+    'user_about_me',
+    'user_birthday',
+    'user_website',
+    'user_hometown',
+    'user_location',
+]

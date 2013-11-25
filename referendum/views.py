@@ -1,4 +1,8 @@
+import ast
 import datetime
+import random
+import re
+import string
 
 from django.conf import settings
 from django.contrib import messages
@@ -12,16 +16,18 @@ from django.http import Http404
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
+from django.views.decorators.http import require_http_methods
 
-from referendum.models import Vote, ActiveVote
+from referendum.models import Vote, ActiveVote,FacebookUserWithLocation
 from referendum import tasks
-
-import random
 from django_facebook.models import FacebookUser
 from django.contrib.auth.models import User
 from django_facebook.tasks import store_friends
 
 def example(request):
+    #TODO: Jako glupo ali neka zasad bude ovako.
+    #TODO: Koristiti funkcije results i friends_results s xhr
+    #TODO: Staviti cache za friends_results
     context = RequestContext(request)
     if request.user.is_authenticated():
         #TODO: makni filter
@@ -30,10 +36,54 @@ def example(request):
             vote = votes[0]
         else:
             vote = None
+
+        key = 'friends_{}'.format(request.user.id)
+        result = cache.get(key)
+        if result is None:
+            cursor = connection.cursor()
+            cursor.execute(
+                'SELECT vote, COUNT(vote) ' +
+                'FROM django_facebook_facebookuser AS fb ' +
+                'JOIN referendum_activevote AS v ' +
+                'ON fb.facebook_id = v.facebook_id ' +
+                'WHERE fb.user_id=%s ' +
+                'GROUP BY vote', [request.user.id]
+                )
+            result = '{}'.format(cursor.fetchall())
+            cache.set(key, result)
+
+        #TODO: Ovo je lose!
+        #TODO: Nepotrebna konverzija: arr of tuples --> string --> row_as_dict
+        #TODO: Potrebno je postaviti row_as_dict u cache, a ne pretacunavati
+        friends_rows = list(ast.literal_eval(result))
+        friends_results= []
+
+        for row in friends_rows:
+            row_as_dict = {
+                'vote' : row[0],
+                'vote_count' : str(row[1])}
+            friends_results.append(row_as_dict)
+
     else:
         vote = None
-    context['vote'] = vote
-    return render_to_response('referendum/example.html', context)
+        #TODO: set null
+        friends_results = -1
+
+  
+    if vote is None:
+	vote_value = -1
+    else:
+        vote_value = vote.vote
+
+    key = 'global_results'
+    global_results = cache.get(key)
+    if global_results is None:
+        global_results = '{}'.format(ActiveVote.objects.values('vote').annotate(vote_count=Count('vote')))
+        cache.set(key, global_results)
+    context['vote'] = vote_value
+    context['global_results'] = global_results
+    context['friends_results'] = friends_results
+    return render_to_response('referendum/main.html', context)
 
 def results(request):
     #TODO: vrati JSON
@@ -45,6 +95,7 @@ def results(request):
     if result is None:
         result = '{}'.format(ActiveVote.objects.values('vote').annotate(Count('vote')))
         cache.set(key, result)
+
     return HttpResponse(result)
 
 def friends_results(request):
@@ -70,7 +121,7 @@ def friends_results(request):
     return HttpResponse(result)
 
 @login_required
-def vote(request):
+def vote2(request):
     try:
         vote = int(request.POST['choice'])
     except (KeyError, ValueError) as e:
@@ -78,55 +129,23 @@ def vote(request):
     tasks.save_vote.delay(request.user.facebook_id, vote)
     return HttpResponseRedirect(reverse('referendum:example'))
 
-def stressTest(request):
-	#Only for testing Remove in deploy version
-	userList=range(1,30001)
-	random.shuffle(userList)
-	num_friends=random.randint(1,500)
-	user_id=random.randint(1,30000)
-	username='netkoinesto'
-	first_name='firstname'
-	last_name='lastname'
-	email='email'
-	password='password'
-	last_login=datetime.datetime.now()
-	us=User(
-        id=1,
-        username=username,
-        first_name=first_name,
-        last_name=last_name,
-        email=email,
-        password=password,
-        is_staff=0,
-        is_active=1,
-        is_superuser=0,
-        last_login=last_login,
-        date_joined=last_login
-    )
-	friends=[]
+@login_required
+@require_http_methods(["POST"])
+def vote(request):
 
-	for i in range(1, num_friends+1):
-	 	facebook_id=random.randint(10000,300000)
-		gender=random.randint(1,2)
-		name='PERO'
-		gend='male'
-		if gender==2:
-			gend='female'
-		friend_dict = { "id":facebook_id, "uid":facebook_id,  "name":name, "sex":gend }
+    if not request.user.is_authenticated():
+        raise PermissionDenied
+    
+    vote = -1
 
-		#friend=FacebookUser(user_id=user_id,facebook_id=facebook_id, name=name,gender=gend)
-		#friend.save()
-		friends.append(friend_dict)
+    try:
+        vote = int(request.POST['vote'])
+        if vote < 0 or vote > 1 :
+            return HttpResponseBadRequest('ERROR 400')
+        tasks.save_vote.delay(request.user.facebook_id, vote)
+    except (KeyError, ValueError) as e:
+        return HttpResponseBadRequest('ERROR 400')   
 
-
-	choice=random.randint(0,1)
-	date=datetime.datetime.now()
-	v=Vote(vote=choice,date=date,facebook_id=facebook_id)
-	v.save()
- 	#for f in friends:
-	f = friends[0]
-	print f.get('name')
-	store_friends(us,friends)
-	return HttpResponseRedirect(reverse('referendum:example'))
-	#return render_to_response('referendum/example.html')
+    #cache.set(key, result)
+    return HttpResponse(vote)
 
