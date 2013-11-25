@@ -50,8 +50,9 @@ docs/_build/
 settings_secret.py
 secret_key.py
 
-# vim
+# vim i ostalo
 *.swp
+*~
 
 # profilne slike ne zelimo u reposu
 images/facebook_profiles/
