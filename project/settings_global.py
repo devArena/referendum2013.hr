@@ -197,6 +197,7 @@ FACEBOOK_DEFAULT_SCOPE = [
     'email',
     'user_about_me',
     'user_birthday',
+    'user_friends',
     'user_website',
     'user_hometown',
     'user_location',
