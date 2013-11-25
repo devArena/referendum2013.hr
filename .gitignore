@@ -56,3 +56,6 @@ secret_key.py
 # profilne slike ne zelimo u reposu
 images/facebook_profiles/
 
+# ne zelimo bazu u reposu
+facebook_example_test_db.sqlite3
+
