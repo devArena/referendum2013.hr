@@ -312,7 +312,8 @@
 		var ratio_za = data[1].value / total_votes;
 
 		var percentage_protiv = Math.round (ratio_protiv *100);
-		var percentage_za = Math.round(ratio_za *100);
+		//var percentage_za = Math.round(ratio_za *100);
+		var percentage_za = 100 - percentage_protiv;
 
 		var arc = d3.svg.arc()
 		    .innerRadius(radius - 0.45*radius)
