@@ -26,8 +26,8 @@
   <link rel="stylesheet" href="{{ STATIC_URL }}django_facebook/css/facebook.css" type="text/css" media="all" />
   <link rel="stylesheet" href="{{ STATIC_URL }}css/base.css" type="text/css" media="all" />
 
-	<script src="http://d3js.org/d3.v3.min.js"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
   <script src="{{ STATIC_URL }}js/csrf.js"></script>
 
   <script type="text/javascript">
@@ -37,82 +37,82 @@
   {% block extra_head %}{% endblock %}
 </head>
 <body>
-	<div id="fb-root"></div>
-	<script>
-		(function(d, s, id) {
-			var js, fjs = d.getElementsByTagName(s)[0];
-			if (d.getElementById(id))
-				return;
-			js = d.createElement(s);
-			js.id = id;
-			js.src = "//connect.facebook.net/hr_HR/all.js#xfbml=1&appId=1407261166178158";
-			fjs.parentNode.insertBefore(js, fjs);
-		}(document, 'script', 'facebook-jssdk'));
-	</script>
+  <div id="fb-root"></div>
+  <script>
+    (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id))
+        return;
+      js = d.createElement(s);
+      js.id = id;
+      js.src = "//connect.facebook.net/hr_HR/all.js#xfbml=1&appId=1407261166178158";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+  </script>
 
-	<div class="navbar navbar-default navbar-static-top" role="navigation">
-		<div class="container">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse"
-					data-target=".navbar-collapse">
-					<span class="sr-only">Toggle navigation</span> <span
-						class="icon-bar"></span> <span class="icon-bar"></span> <span
-						class="icon-bar"></span>
-				</button>
-				<a class="navbar-brand">referendum2013.hr</a>
-			</div>
-			<nav class="navbar-collapse bs-navbar-collapse collapse"
-				role="navigation" style="height: 1px;">
-				{% if user.is_authenticated %}
-				<div class="nav navbar-nav navbar-right">
-					<a class="btn btn-default navbar-btn navbar-right"
-						href="{% url 'auth_logout' %}?next={{ request.path|urlencode }}">Odlogiraj
-						se, {{ user.first_name }} {{ user.last_name }}</a>
-				</div>
-				{% endif %}
-			</nav>
-		</div>
-	</div>
+  <div class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse"
+          data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span> <span
+            class="icon-bar"></span> <span class="icon-bar"></span> <span
+            class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand">referendum2013.hr</a>
+      </div>
+      <nav class="navbar-collapse bs-navbar-collapse collapse"
+        role="navigation" style="height: 1px;">
+        {% if user.is_authenticated %}
+        <div class="nav navbar-nav navbar-right">
+          <a class="btn btn-default navbar-btn navbar-right"
+            href="{% url 'auth_logout' %}?next={{ request.path|urlencode }}">Odlogiraj
+            se, {{ user.first_name }} {{ user.last_name }}</a>
+        </div>
+        {% endif %}
+      </nav>
+    </div>
+  </div>
 
 
   {% block page_content %}
   {% endblock %}
 
-	<hr />
-	<div class="container">
-		<div class="row">
-			<div class="col-md-6">
-				<h2>O projektu</h2>
-				<p>Ova web stranica predstavlja dio znanstvenoga istraživanja u
-					području društvenih mreža. Cilj je ovoga istraživanja utvrditi kako
-					stav okoline utječe na stav pojedinca te kako se širi vijest u
-					društvenim mrežama.</p>
+  <hr />
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <h2>O projektu</h2>
+        <p>Ova web stranica predstavlja dio znanstvenoga istraživanja u
+          području društvenih mreža. Cilj je ovoga istraživanja utvrditi kako
+          stav okoline utječe na stav pojedinca te kako se širi vijest u
+          društvenim mrežama.</p>
 
-			</div>
-			<div class="col-md-6">
-				<h2>Autori projekta</h2>
-				<p>doc.dr.sc. <a href="http://www.fer.unizg.hr/mile.sikic">Mile Šikić</a> , Kontakt: referendum2013.hr@gmail.com <br> 
-				Nino Antulov-Fantulin, Iva Miholić, Matija Piškorec, Bruno Rahle, Tomislav Lipić, Vedran Ivanac, Matej Mihelčić.
-				</p>
-			</div>
-		</div>
+      </div>
+      <div class="col-md-6">
+        <h2>Autori projekta</h2>
+        <p>doc.dr.sc. <a href="http://www.fer.unizg.hr/mile.sikic">Mile Šikić</a> , Kontakt: referendum2013.hr@gmail.com <br>
+        Nino Antulov-Fantulin, Iva Miholić, Matija Piškorec, Bruno Rahle, Tomislav Lipić, Vedran Ivanac, Matej Mihelčić.
+        </p>
+      </div>
+    </div>
 
 
-		<hr />
+    <hr />
 
-		<footer>
-			<p>©referendum2013.hr</p>
-		</footer>
+    <footer>
+      <p>©referendum2013.hr</p>
+    </footer>
 
-		<input type="hidden" id="global_results" value="{{ global_results }}">
-	</div>
-	
+    <input type="hidden" id="global_results" value="{{ global_results }}">
+  </div>
 
-	<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
-	
-	{% include 'django_facebook/_facebook_js.html' %}
-	
-	<script type="text/javascript">
+
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
+
+  {% include 'django_facebook/_facebook_js.html' %}
+
+  <script type="text/javascript">
 
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-45993003-1']);

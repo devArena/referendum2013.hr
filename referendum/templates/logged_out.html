@@ -9,7 +9,7 @@
     </p>
     <form action="{% url 'facebook_connect' %}" method="post">
       {% csrf_token %}
-      <input type="hidden" value="{{ request.path }}"	name="next" />
+      <input type="hidden" value="{{ request.path }}"  name="next" />
       <p>
         <a class="btn btn-lg btn-default" role="button" onclick="F.connect(this.parentNode.parentNode); return false;">
           Prijavite se putem Facebooka
@@ -41,8 +41,8 @@
   </div>
 </div>
 {% endblock %}
-  
-{% block results_area %}	
+
+{% block results_area %}
 <div class="col-md-12 text-center">
   <h2>Trenutni rezultati</h2>
   <svg id="chart_global_results"></svg>
