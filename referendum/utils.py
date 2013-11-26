@@ -53,7 +53,6 @@ def calculate_percentages(counts, digits=2):
     return whole
 
 #TODO napisi dekorator @cache_value
-
 def get_active_vote(facebook_id, force=False):
     '''
     Gets the active vote of a particular facebook user.
