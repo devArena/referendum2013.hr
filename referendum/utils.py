@@ -1,9 +1,10 @@
 from django.core.cache import cache
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import connection
 from django.db.models import Count
 
 from referendum.models import ActiveVote
+from referendum import tasks
 
 def calculate_percentages(counts, digits=2):
     '''
@@ -53,29 +54,31 @@ def calculate_percentages(counts, digits=2):
 
 #TODO napisi dekorator @cache_value
 
-def get_active_vote(facebook_id):
+def get_active_vote(facebook_id, force=False):
     '''
     Gets the active vote of a particular facebook user.
     '''
     key = 'vote_{}'.format(facebook_id)
     vote = cache.get(key)
-    if vote is None:
+    if vote is None or foce:
         try:
             vote = ActiveVote.objects.get(facebook_id=facebook_id)
         except ObjectDoesNotExist:
             vote = None
+        except MultipleObjectsReturned:
+            vote = tasks.fix_votes(facebook_id)
         cache.set(key, vote)
     return vote
 
-def get_global_results():
+def get_global_results(force=False):
     '''
     Gets the global results from cache.
 
     If there are no results, we calculate them and save to cache.
     '''
-    key = 'global_results_2'
+    key = 'global_results'
     result = cache.get(key)
-    if result is None:
+    if result is None or fprce:
         query_result = ActiveVote.objects.values('vote').annotate(Count('vote'))
         result = [0] * 2
         for q in query_result:
@@ -83,21 +86,21 @@ def get_global_results():
         cache.set(key, result)
     return result
 
-def get_global_count():
+def get_global_count(force=False):
     '''
     Gets the total number of votes casted.
     '''
-    return sum(get_global_results())
+    return sum(get_global_results(force))
 
-def get_friends_results(user_id):
+def get_friends_results(user_id, force=False):
     '''
     Gets the results for facebook friends of the user.
 
     If there are no results, we calculate them and save to cache.
     '''
-    key = 'friends_{}_2'.format(user_id)
+    key = 'friends_{}'.format(user_id)
     result = cache.get(key)
-    if result is None:
+    if result is None or force:
         cursor = connection.cursor()
         cursor.execute(
             'SELECT vote, COUNT(vote) ' +
@@ -115,17 +118,17 @@ def get_friends_results(user_id):
         cache.set(key, result)
     return result
 
-def get_full_results(user_id):
+def get_full_results(user_id, force=False):
     ret = {}
 
-    friends_results = get_friends_results(user_id)
+    friends_results = get_friends_results(user_id, force)
     ret['friends_results'] = {
         'percentages': calculate_percentages(friends_results),
         'raw_numbers': friends_results,
         'responses': sum(friends_results),
     }
 
-    global_results = get_global_results()
+    global_results = get_global_results(force)
     ret['global_results'] = {
         'percentages': calculate_percentages(global_results),
         'raw_numbers': global_results,
