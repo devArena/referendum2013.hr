@@ -1,4 +1,4 @@
-KolkoNasImaHR2013
+referendum2013.hr
 ================
 
 Prerequisites: django_facebook
