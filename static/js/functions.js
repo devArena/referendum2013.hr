@@ -194,10 +194,11 @@ function init_controls() {
 
 function draw_results() {
   results = jQuery.parseJSON(global_results_raw.replace(/&#39;/g, "\""));
-  draw_aggreated_results_all(results, d3.select("#chart_global_results"));
+  if (results != -1) {
+    draw_aggreated_results_all(results, d3.select("#chart_global_results"));
+  }
 
   friends_results = jQuery.parseJSON(friends_results_raw.replace(/&#39;/g, "\""));
-
   if (friends_results != -1) {
     draw_aggreated_results_friends(friends_results, d3.select("#chart_friends_results"));
 

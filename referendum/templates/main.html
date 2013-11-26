@@ -6,8 +6,8 @@
 
 {% block inline_javascript %}
   var current_vote = {{ vote }};
-  var global_results_raw = "{{ global_results }}";
-  var friends_results_raw = "{{ friends_results }}";
+  var global_results_raw = "-1";
+  var friends_results_raw = "-1";
 {% endblock %}
 
 {% block page_content %}
@@ -47,9 +47,13 @@
   </div>
 </div>
 
+{% block results_area %}
 <hr />
 <div class="container">
-  {% block results_area %}
+  <script type="text/javascript">
+    var global_results_raw = "{{ global_results }}";
+    var friends_results_raw = "{{ friends_results }}";
+  </script>
   <div class="col-md-6 text-center">
     <h2>Trenutni rezultati</h2>
     <svg id="chart_global_results"></svg>
@@ -63,6 +67,7 @@
     <p>Ukupni broj glasova: <span class="badge votes-friends">0</span></p>
     <p class="text-muted">(rezultati se osvježavaju svakih 60 sekundi)</p>
   </div>
-  {% endblock %}
 </div>
 {% endblock %}
+{% endblock %}
+
