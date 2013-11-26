@@ -111,7 +111,7 @@ def get_friends_results(user_id):
         results_raw = cursor.fetchall()
         result = [0] * 2
         for r in results_raw:
-            result[r[0]] = r[1]
+            result[r[0]] = int(r[1])
         cache.set(key, result)
     return result
 
