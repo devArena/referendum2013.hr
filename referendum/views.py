@@ -44,6 +44,7 @@ def example(request):
         context['vote'] = -1
         return render_to_response('logged_out.html', context)
 
+
 @login_required
 @require_http_methods(["POST"])
 def vote(request):
