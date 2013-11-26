@@ -214,12 +214,8 @@ function draw_aggreated_results_all(results, chart) {
     'value': 0
   }, ];
 
-  if (results.length >= 1) {
-    mod_results[results[0].vote].value = Number(results[0].vote_count);
-  }
-  if (results.length == 2) {
-    mod_results[results[1].vote].value = Number(results[1].vote_count);
-  }
+  mod_results[0].value = Number(results.raw_numbers[0]);
+  mod_results[1].value = Number(results.raw_numbers[1]);
 
   var total_votes_all = mod_results[0].value + mod_results[1].value;
   $('.votes-all').text(total_votes_all);
@@ -236,12 +232,8 @@ function draw_aggreated_results_friends(results, chart) {
     'value': 0
   }, ];
 
-  if (results.length >= 1) {
-    mod_results[results[0].vote].value = Number(results[0].vote_count);
-  }
-  if (results.length == 2) {
-    mod_results[results[1].vote].value = Number(results[1].vote_count);
-  }
+  mod_results[0].value = Number(results.raw_numbers[0]);
+  mod_results[1].value = Number(results.raw_numbers[1]);
 
   var total_votes_friends = mod_results[0].value + mod_results[1].value;
   $('.votes-friends').text(total_votes_friends);
