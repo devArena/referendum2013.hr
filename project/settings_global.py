@@ -207,3 +207,6 @@ FACEBOOK_DEFAULT_SCOPE = [
     'user_hometown',
     'user_location',
 ]
+
+USE_CELERY = True
+
