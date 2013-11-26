@@ -5,12 +5,7 @@
 {% endblock %}
 
 {% block inline_javascript %}
-  {% if vote %}
-    var current_vote = {{ vote }};
-  {% else %}
-    var current_vote = -1;
-  {% endif %}
-
+  var current_vote = {{ vote }};
   var global_results_raw = "{{ global_results }}";
   var friends_results_raw = "{{ friends_results }}";
 {% endblock %}
