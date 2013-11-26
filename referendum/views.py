@@ -73,6 +73,7 @@ def example(request):
     context['vote'] = vote_value
     context['global_results'] = global_results
     context['friends_results'] = friends_results
+    context['votes_count'] = global_results[0].vote_count + global_results[1].vote_count
 
     if request.user.is_authenticated():
         return render_to_response('main.html', context)
