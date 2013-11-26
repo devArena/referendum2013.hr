@@ -31,7 +31,7 @@ def example(request):
     if user.is_authenticated():
         vote = get_active_vote(user.facebook_id)
         if vote is None:
-    	    context['vote'] = -1
+            context['vote'] = -1
         else:
             context['vote'] = vote.vote
         full_results = get_full_results(user.id)
