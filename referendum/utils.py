@@ -60,7 +60,7 @@ def get_active_vote(facebook_id, force=False):
     '''
     key = 'vote_{}'.format(facebook_id)
     vote = cache.get(key)
-    if vote is None or foce:
+    if vote is None or force:
         try:
             vote = ActiveVote.objects.get(facebook_id=facebook_id)
         except ObjectDoesNotExist:
@@ -78,7 +78,7 @@ def get_global_results(force=False):
     '''
     key = 'global_results'
     result = cache.get(key)
-    if result is None or fprce:
+    if result is None or force:
         query_result = ActiveVote.objects.values('vote').annotate(Count('vote'))
         result = [0] * 2
         for q in query_result:
