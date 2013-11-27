@@ -66,18 +66,22 @@ def vote(request):
 
     return HttpResponse(vote)
 
-@facebook_required_lazy
 def local_map(request):
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect('/')
     context = RequestContext(request)
     return render_to_response('map-local.html', context)
 
-@facebook_required_lazy
 def world_map(request):
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect('/')
     context = RequestContext(request)
     return render_to_response('map.html', context)
 
-@facebook_required_lazy
 def fetch_country_data(request, scope, location):
+    if not request.user.is_authenticated():
+        raise PermissionDenied
+
     georesults = get_georesults(scope, location)
 
     results = [['Podrucje', 'Postotak ZA']]
