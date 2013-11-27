@@ -7,6 +7,26 @@ $.get('/data/county/current/', drawChart);
 {% block chart_data %}
 var parsed_data = jQuery.parseJSON(raw_data);
 for (var i = 1; i < parsed_data.length; ++i) {
+  if (parsed_data[i][0] == 'Zagreb County, Croatia') { parsed_data[i][0] = 'HR-01'; continue; }
+  if (parsed_data[i][0] == 'Krapina-Zagorje County, Croatia') { parsed_data[i][0] = 'HR-02'; continue; }
+  if (parsed_data[i][0] == 'Sisak-Moslavina County, Croatia') { parsed_data[i][0] = 'HR-03'; continue; }
+  if (parsed_data[i][0] == 'Karlovac County, Croatia') { parsed_data[i][0] = 'HR-04'; continue; }
+  if (parsed_data[i][0] == 'Vara\u017edin County, Croatia') { parsed_data[i][0] = 'HR-05'; continue; }
+  if (parsed_data[i][0] == 'Koprivnica-Kri\u017eevci County, Croatia') { parsed_data[i][0] = 'HR-06'; continue; }
+  if (parsed_data[i][0] == 'Bjelovar-Bilogora County, Croatia') { parsed_data[i][0] = 'HR-07'; continue; }
+  if (parsed_data[i][0] == 'Primorje-Gorski Kotar County, Croatia') { parsed_data[i][0] = 'HR-08'; continue; }
+  if (parsed_data[i][0] == 'Lika-Senj County, Croatia') { parsed_data[i][0] = 'HR-09'; continue; }
+  if (parsed_data[i][0] == 'Virovitica-Podravina County, Croatia') { parsed_data[i][0] = 'HR-10'; continue; }
+  if (parsed_data[i][0] == 'Po\u017eega-Slavonia County, Croatia') { parsed_data[i][0] = 'HR-11'; continue; }
+  if (parsed_data[i][0] == 'Brod-Posavina County, Croatia') { parsed_data[i][0] = 'HR-12'; continue; }
+  if (parsed_data[i][0] == 'Zadar County, Croatia') { parsed_data[i][0] = 'HR-13'; continue; }
+  if (parsed_data[i][0] == 'Osijek-Baranja County, Croatia') { parsed_data[i][0] = 'HR-14'; continue; }
+  if (parsed_data[i][0] == '\u0160ibenik-Knin County, Croatia') { parsed_data[i][0] = 'HR-15'; continue; }
+  if (parsed_data[i][0] == 'Vukovar-Srijem County, Croatia') { parsed_data[i][0] = 'HR-16'; continue; }
+  if (parsed_data[i][0] == 'Split-Dalmatia County, Croatia') { parsed_data[i][0] = 'HR-17'; continue; }
+  if (parsed_data[i][0] == 'Istria County, Croatia') { parsed_data[i][0] = 'HR-18'; continue; }
+  if (parsed_data[i][0] == 'Dubrovnik-Neretva County, Croatia') { parsed_data[i][0] = 'HR-19'; continue; }
+  if (parsed_data[i][0] == 'Me\u0111imurje County, Croatia') { parsed_data[i][0] = 'HR-20'; continue; }
   if (parsed_data[i][0] == 'City of Zagreb, Croatia') { parsed_data[i][0] = 'HR-21'; continue; }
 }
 var data = google.visualization.arrayToDataTable(parsed_data);
