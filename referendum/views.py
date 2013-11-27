@@ -68,13 +68,13 @@ def vote(request):
 
 def local_map(request):
     if not request.user.is_authenticated():
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect('/?from=croatia')
     context = RequestContext(request)
     return render_to_response('map-local.html', context)
 
 def world_map(request):
     if not request.user.is_authenticated():
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect('/?from=world')
     context = RequestContext(request)
     return render_to_response('map.html', context)
 
