@@ -24,6 +24,8 @@ from referendum.utils import *
 
 from project.settings import USE_CELERY
 
+from django_facebook.decorators import facebook_required_lazy
+
 def example(request):
     user = request.user
     context = RequestContext(request)
@@ -64,17 +66,17 @@ def vote(request):
 
     return HttpResponse(vote)
 
-@login_required
+@facebook_required_lazy
 def local_map(request):
     context = RequestContext(request)
     return render_to_response('map-local.html', context)
 
-@login_required
+@facebook_required_lazy
 def world_map(request):
     context = RequestContext(request)
     return render_to_response('map.html', context)
 
-@login_required
+@facebook_required_lazy
 def fetch_country_data(request, scope, location):
     georesults = get_georesults(scope, location)
 
