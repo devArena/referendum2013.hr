@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from project.celery import app
 
-from referendum.models import ActiveVote, Vote
+from referendum.models import ActiveVote, Vote, FacebookUserWithLocation
 
 def fix_votes(facebook_id):
     all_my_active_votes = ActiveVote.objects.filter(facebook_id=facebook_id)
@@ -23,6 +23,10 @@ def fix_votes(facebook_id):
 
 @app.task
 def save_vote(facebook_id, vote):
+    try:
+        user = FacebookUserWithLocation.objects.get(facebook_id=facebook_id)
+    except ObjectDoesNotExist:
+        return
     v = Vote(vote=vote, facebook_id=facebook_id)
     v.save()
     try:
