@@ -81,7 +81,7 @@ def fetch_country_data(request, scope, location):
     results = [['Podrucje', 'Postotak ZA']]
     for place in georesults:
         total = sum(georesults[place])
-        #if total < 5: continue
+        if total < 5: continue
         percentages = calculate_percentages(georesults[place])
         results.append([place, percentages[1]])
 

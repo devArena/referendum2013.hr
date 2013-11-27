@@ -19,8 +19,8 @@
 
     {% block chart_options %}
     var options = {
-      width: 1024,
-      height: 768,
+      width: 1000,
+      height: 600,
       colorAxis: {
         minValue: 0,
         maxValue: 100,
@@ -38,7 +38,18 @@
 {% endblock %}
 
 {% block page_content %}
-<div class="container" id="karta">
+<div class="container">
+  <h1 class="text-center">Prikaz karte</h1>
+  <p>
+    Oznacena su samo podrucja za koja imamo vise od 5 odgovora.
+  </p>
+  <p>
+    Zbog nepreciznosti geolokacijskog API-ja, nepotpunosti te nepreciznosti
+    podataka na Facebooku i ne-reprezentivnog uzorka, ne garantiramo preciznost
+    rezultata.
+  </p>
+  <div id="karta">
+  </div>
 </div>
 {% endblock %}
 
