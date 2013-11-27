@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block extra_head %}
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+  google.load("visualization", '1', {packages:['geochart']});
+  google.setOnLoadCallback(loadResults);
+
+  function loadResults() {
+    {% block chart_load_data %}
+    $.get('/data/country/current/', drawChart);
+    {% endblock %}
+  }
+
+  function drawChart(raw_data) {
+    {% block chart_data %}
+    var data = google.visualization.arrayToDataTable(jQuery.parseJSON(raw_data));
+    {% endblock %}
+
+    {% block chart_options %}
+    var options = {
+      width: 1024,
+      height: 768,
+      colorAxis: {
+        minValue: 0,
+        maxValue: 100,
+        colors: ['#D7191C', '#FDAE61', '#FFFFBF', '#A6D96A', '#1A9641'],
+      },
+    };
+    {% endblock %}
+    var geochart = new google.visualization.GeoChart(
+        document.getElementById('karta')
+    );
+    geochart.draw(data, options);
+  }
+
+</script>
+{% endblock %}
+
+{% block page_content %}
+<div class="container" id="karta">
+</div>
+{% endblock %}
+

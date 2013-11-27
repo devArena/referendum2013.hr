@@ -1,5 +1,6 @@
 import ast
 import datetime
+import json
 import random
 import re
 import string
@@ -19,7 +20,7 @@ from django.views.decorators.http import require_http_methods
 
 from referendum import tasks
 from referendum.models import ActiveVote, FacebookUserWithLocation, Vote
-from referendum.utils import get_active_vote, get_full_results, get_global_count
+from referendum.utils import *
 
 from project.settings import USE_CELERY
 
@@ -62,4 +63,28 @@ def vote(request):
         return HttpResponseBadRequest('ERROR 400')
 
     return HttpResponse(vote)
+
+@login_required
+def local_map(request):
+    context = RequestContext(request)
+    return render_to_response('map-local.html', context)
+
+@login_required
+def world_map(request):
+    context = RequestContext(request)
+    return render_to_response('map.html', context)
+
+@login_required
+def fetch_country_data(request, scope, location):
+    georesults = get_georesults(scope, location)
+
+    results = [['Podrucje', 'Postotak ZA']]
+    for place in georesults:
+        total = sum(georesults[place])
+        #if total < 5: continue
+        percentages = calculate_percentages(georesults[place])
+        results.append([place, percentages[1]])
+
+    return HttpResponse(json.dumps(results))
+
 

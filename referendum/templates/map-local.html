@@ -1,0 +1,27 @@
+{% extends 'map.html' %}
+
+{% block chart_load_data %}
+$.get('/data/county/current/', drawChart);
+{% endblock %}
+
+{% block chart_data %}
+var parsed_data = jQuery.parseJSON(raw_data);
+for (var i = 1; i < parsed_data.length; ++i) {
+  if (parsed_data[i][0] == 'City of Zagreb, Croatia') { parsed_data[i][0] = 'HR-21'; continue; }
+}
+var data = google.visualization.arrayToDataTable(parsed_data);
+{% endblock %}
+
+{% block chart_options %}
+var options = {
+  width: 1024,
+  height: 768,
+  colorAxis: {
+    minValue: 0,
+    maxValue: 100,
+    colors: ['#D7191C', '#FDAE61', '#FFFFBF', '#A6D96A', '#1A9641'],
+  },
+  resolution: 'provinces',
+  region: 'HR',
+};
+{% endblock %}

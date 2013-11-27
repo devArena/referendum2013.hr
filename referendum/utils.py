@@ -137,6 +137,43 @@ def get_full_results(user_id, force=False):
 
     return ret
 
+def get_georesults(scope, location, force=False):
+    if scope != 'county' and scope != 'country':
+        raise KeyError('scope value incorrect!')
+    if location != 'current' and location != 'hometown':
+        raise KeyError('location value incorrect!')
+    # our database is stupid
+    if location == 'current':
+        location = 'location'
+
+    key = 'georesults_{}_{}'.format(scope, location)
+    results = cache.get(key)
+    if results is None or force:
+        query_string = (
+            'SELECT l.{0}, av.vote, count(*)' +
+            '  FROM referendum_activevote AS av' +
+            '  JOIN referendum_facebookuserwithlocation AS u' +
+            '    ON u.facebook_id = av.facebook_id' +
+            '  JOIN referendum_location AS l' +
+            '    ON l.id = u.{1}_id' +
+            '  GROUP BY' +
+            '    l.{0}, av.vote'
+        ).format(scope, location)
+
+        cursor = connection.cursor()
+        cursor.execute(query_string)
+        raw_results = cursor.fetchall()
+
+        results = {}
+        for result in raw_results:
+            (place, vote, count) = result
+            if place not in results:
+                results[place] = [0] * 2
+            results[place][vote] = count
+
+        cache.set(key, results)
+    return results
+
 
 if __name__ == '__main__':
     import doctest

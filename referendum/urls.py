@@ -8,4 +8,10 @@ from referendum import views
 urlpatterns = patterns('',
     url(r'^$', views.example, name='example'),
     url(r'^vote/$', views.vote, name='vote'),
+    url(r'^croatia/$', views.local_map, name='local_map'),
+    url(r'^world/$', views.world_map, name='world_map'),
+    url(r'^data/(?P<scope>country|county)/(?P<location>current|hometown)/$',
+        views.fetch_country_data,
+        name='data:scope:location'
+    ),
 )
