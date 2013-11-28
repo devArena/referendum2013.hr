@@ -22,6 +22,8 @@ from referendum import tasks
 from referendum.models import ActiveVote, FacebookUserWithLocation, Vote
 from referendum.utils import *
 
+from django_facebook.tasks import store_friends
+
 from project.settings import USE_CELERY
 
 def example(request):
@@ -75,6 +77,11 @@ def world_map(request):
     return render_to_response('map.html', context)
 
 @login_required
+def age_hchart(request):
+    context = RequestContext(request)
+    return render_to_response('age.html', context)
+
+
 def fetch_country_data(request, scope, location):
     georesults = get_georesults(scope, location)
 
@@ -87,4 +94,12 @@ def fetch_country_data(request, scope, location):
 
     return HttpResponse(json.dumps(results))
 
+
+def fetch_global_ageresults(request):
+
+    ageresults = get_global_ageresults()
+    
+    print ageresults
+        
+    return HttpResponse(json.dumps(ageresults))
 
