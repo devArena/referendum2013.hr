@@ -127,6 +127,7 @@ def get_full_results(user_id, force=False):
         'responses': sum(friends_results),
     }
 
+#TODO: add results by age
     global_results = get_global_results(force)
     ret['global_results'] = {
         'percentages': calculate_percentages(global_results),
@@ -158,7 +159,7 @@ def get_georesults(scope, location, force=False):
             '  GROUP BY' +
             '    l.{0}, av.vote'
         ).format(scope, location)
-
+        
         cursor = connection.cursor()
         cursor.execute(query_string)
         raw_results = cursor.fetchall()
@@ -172,6 +173,59 @@ def get_georesults(scope, location, force=False):
 
         cache.set(key, results)
     return results
+
+
+#TODO: couple this query with query for glabal results
+def get_global_ageresults(force=False):
+    '''
+    Gets the global results per age from cache.
+
+    If there are no results, we calculate them and save to cache.
+    '''
+    key = 'glabal_ageresults'
+    result = cache.get(key)
+    if result is None or force:
+        #do this better using django CRM or postgres CTE
+        cursor = connection.cursor()
+        #format this nicely
+        cursor.execute(
+                       'SELECT av.vote, '+
+                       'CASE'+
+                       "   WHEN (date_part('years',AGE(fb.date_of_birth))<10 ) THEN 0"+
+                       "   WHEN (date_part('years',AGE(fb.date_of_birth))<20) THEN 1"+
+                       "   WHEN (date_part('years',AGE(fb.date_of_birth))<30) THEN 2"+
+                       "   WHEN (date_part('years',AGE(fb.date_of_birth))<40) THEN 3"+
+                       "   WHEN (date_part('years',AGE(fb.date_of_birth))<50) THEN 4"+
+                       "   WHEN (date_part('years',AGE(fb.date_of_birth))<60)  THEN 5"+
+                       "   WHEN (date_part('years',AGE(fb.date_of_birth))>=60) THEN 6"+
+                       '   END AS decade,'+
+                       '   COUNT(av.vote)'+
+                      '   FROM referendum_facebookuserwithlocation AS fb'+
+                      '   JOIN referendum_activevote AS av'+
+                      '   ON fb.facebook_id = av.facebook_id'+
+                      '   GROUP BY decade, av.vote'+
+                      '   ORDER BY decade, av.vote')
+        results_raw = cursor.fetchall()
+        
+        #TODO: do this on client side or prepare sql
+        #TODO: [Important!] use calculate_percentages to overcome anonymity issues?
+        bins = ['0-9', '10-19', '20-29', '30-39', '40-49', '50-59', '60+']
+        no_yes = ['PROTIV', 'ZA']
+        result = []
+        
+        for bin in bins:
+            result.append({'godine': bin, 'ZA': 0, 'PROTIV':0})
+        for r in results_raw:
+            result[r[1]][no_yes[r[0]]]=r[2]
+        
+    cache.set(key, result)
+        
+    return result
+
+
+
+
+
 
 if __name__ == '__main__':
     import doctest
