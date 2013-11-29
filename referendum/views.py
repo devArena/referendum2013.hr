@@ -103,10 +103,6 @@ def fetch_country_data(request, scope, location):
 
 
 def fetch_global_ageresults(request):
-
     ageresults = get_global_ageresults()
-
-    print ageresults
-
     return HttpResponse(json.dumps(ageresults))
 
