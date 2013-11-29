@@ -70,6 +70,7 @@ def vote(request):
 
 def local_map(request):
     if not request.user.is_authenticated():
+        return HttpResponseRedirect('/?from=croatia')
     context = RequestContext(request)
     return render_to_response('map-local.html', context)
 
