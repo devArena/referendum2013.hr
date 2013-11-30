@@ -199,7 +199,7 @@ def get_global_ageresults(force=False):
                        "   WHEN (date_part('years',AGE(fb.date_of_birth))<50) THEN 4"+
                        "   WHEN (date_part('years',AGE(fb.date_of_birth))<60)  THEN 5"+
                        "   WHEN (date_part('years',AGE(fb.date_of_birth))>=60) THEN 6"+
-                       '   ELSE 7'
+                       '   ELSE 7' +
                        '   END AS decade,'+
                        '   COUNT(av.vote)'+
                       '   FROM referendum_facebookuserwithlocation AS fb'+
