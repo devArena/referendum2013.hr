@@ -80,7 +80,6 @@ def world_map(request):
     context = RequestContext(request)
     return render_to_response('map.html', context)
 
-@login_required
 def age_hchart(request):
     context = RequestContext(request)
     return render_to_response('age.html', context)
@@ -100,7 +99,6 @@ def fetch_country_data(request, scope, location):
         results.append([place, percentages[1]])
 
     return HttpResponse(json.dumps(results))
-
 
 def fetch_global_ageresults(request):
     ageresults = get_global_ageresults()

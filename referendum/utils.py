@@ -198,18 +198,20 @@ def get_global_ageresults(force=False):
                        "   WHEN (date_part('years',AGE(fb.date_of_birth))<50) THEN 4"+
                        "   WHEN (date_part('years',AGE(fb.date_of_birth))<60)  THEN 5"+
                        "   WHEN (date_part('years',AGE(fb.date_of_birth))>=60) THEN 6"+
+                       '   ELSE 7' +
                        '   END AS decade,'+
                        '   COUNT(av.vote)'+
                       '   FROM referendum_facebookuserwithlocation AS fb'+
                       '   JOIN referendum_activevote AS av'+
                       '   ON fb.facebook_id = av.facebook_id'+
+                      #'   WHERE fb.date_of_birth IS NOT NULL'+
                       '   GROUP BY decade, av.vote'+
                       '   ORDER BY decade, av.vote')
         results_raw = cursor.fetchall()
         
         #TODO: do this on client side or prepare sql
         #TODO: [Important!] use calculate_percentages to overcome anonymity issues?
-        bins = ['0-9', '10-19', '20-29', '30-39', '40-49', '50-59', '60+']
+        bins = ['0-9', '10-19', '20-29', '30-39', '40-49', '50-59', '60+', 'Nepoznato']
         no_yes = ['PROTIV', 'ZA']
         result = []
         
@@ -217,15 +219,10 @@ def get_global_ageresults(force=False):
             result.append({'godine': bin, 'ZA': 0, 'PROTIV':0})
         for r in results_raw:
             result[r[1]][no_yes[r[0]]]=r[2]
-        
-    cache.set(key, result)
+
+        cache.set(key, result)
         
     return result
-
-
-
-
-
 
 if __name__ == '__main__':
     import doctest

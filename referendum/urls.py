@@ -16,4 +16,5 @@ urlpatterns = patterns('',
     ),
     url(r'^age/$', views.age_hchart, name='age_hchart'),
     url(r'^data/age/$', views.fetch_global_ageresults, name='data:age'),
+
 )
