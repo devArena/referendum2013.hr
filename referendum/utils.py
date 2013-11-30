@@ -218,8 +218,8 @@ def get_global_ageresults(force=False):
             result.append({'godine': bin, 'ZA': 0, 'PROTIV':0})
         for r in results_raw:
             result[r[1]][no_yes[r[0]]]=r[2]
-        
-    cache.set(key, result)
+            
+        cache.set(key, result)
         
     return result
 
