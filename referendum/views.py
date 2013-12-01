@@ -81,6 +81,8 @@ def world_map(request):
     return render_to_response('map.html', context)
 
 def age_hchart(request):
+	if not request.user.is_authenticated():
+        return HttpResponseRedirect('/?from=age')
     context = RequestContext(request)
     return render_to_response('age.html', context)
 
@@ -100,7 +102,11 @@ def fetch_country_data(request, scope, location):
 
     return HttpResponse(json.dumps(results))
 
+@facebook_required_lazy
 def fetch_global_ageresults(request):
+    if not request.user.is_authenticated():
+        raise PermissionDenied
+	
     ageresults = get_global_ageresults()
     return HttpResponse(json.dumps(ageresults))
 
