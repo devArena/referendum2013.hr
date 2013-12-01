@@ -81,7 +81,7 @@ def world_map(request):
     return render_to_response('map.html', context)
 
 def age_hchart(request):
-	if not request.user.is_authenticated():
+    if not request.user.is_authenticated():
         return HttpResponseRedirect('/?from=age')
     context = RequestContext(request)
     return render_to_response('age.html', context)
