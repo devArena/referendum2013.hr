@@ -1,4 +1,6 @@
-{% extends 'base.html' %} {% block extra_head %}
+{% extends 'base.html' %} 
+
+{% block extra_head %}
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript">
 
@@ -8,17 +10,14 @@ $(document).ready(function () {
 	});
     
   function loadResults() {
-    {% block chart_load_data %}
-    $.get('/data/age', drawChart);
-    {% endblock %}
+    $.get('/data/age/', drawChart);
   }
 
   function drawChart(raw_data) {
 
     var data = jQuery.parseJSON(raw_data);
 
-    var svg = d3.select("#age_hchart");
-    
+    //var svg = d3.select("#age_hchart");
     //$(svg[0]).empty();
    
     var ukupno_za = data.reduce(function(pv, cv) { return {"ZA":pv.ZA + cv.ZA}; }).ZA;
