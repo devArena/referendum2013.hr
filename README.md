@@ -1,9 +1,9 @@
 referendum2013.hr
 ================
 
-Prerequisites: django_facebook
-
-Install it with `pip install django_facebook`.
+Prerequisites:
+- django_facebook (Install it with `pip install django_facebook`.)
+- celery
 
 Run the server with `python manage.py runserver 8080`.
 
